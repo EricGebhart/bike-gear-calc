@@ -1,0 +1,19 @@
+;; Skid patches.
+;; Simplify the gear ratio to the smallest equivalent whole number ratio.
+;; For single legged skidders, the number of skid patches is the denominator.
+;; For folks who can skid with either foot forward (ambidextrous skidders):
+;; if the numerator is even, the number of skid patches is still the denominator.
+;; if the numerator is odd, the number of skid patches is the denominator * 2.
+
+;; 48x20 => 24x10 => 12x5 results in 5 skid patches for both single and ambidextrous skidders.
+;; 43x18 results in 18 patches for single skidders but 36 for ambidextrous skidders.
+
+;; Notice that the number of skid patches doubles not when the chainring is
+;; odd, but when the simplified gear numerator is odd, thus ... 42x16 =>
+;; 21x8 results in 8 patches for single skidders but 16 for ambidextrous
+;; skidders. What gear should I choose? Non-skidders should choose even
+;; toothed gears to maximize chain and sprocket life. Single-legged
+;; skidders should choose odd toothed chainrings to maximize skid
+;; patches. Ambidextrous skidders can choose even toothed gears where the
+;; chainring simplifies to an odd number to get both extended drivetrain
+;; wear and doubled skid patches.

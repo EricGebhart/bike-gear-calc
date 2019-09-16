@@ -1,0 +1,48 @@
+Crank-diameter.
+
+<!-- crank diameter in inches -->
+<option value="7.87"> 100 mm </option>
+<option value="8.27"> 105 mm </option>
+<option value="8.66"> 110 mm </option>
+<option value="9.06"> 115 mm </option>
+<option value="9.45"> 120 mm </option>
+<option value="9.84"> 125 mm </option>
+<option value="10.24"> 130 mm </option>
+<option value="10.63"> 135 mm </option>
+<option value="11.02"> 140 mm </option>
+<option value="11.41"> 145 mm </option>
+<option value="11.81"> 150 mm </option>
+<option value="11.97"> 152 mm </option>
+<option value="12.2"> 155 mm </option>
+<option value="12.44"> 158 mm </option>
+<option value="12.6"> 160 mm </option>
+<option value="12.8"> 162.5 mm </option>
+<option value="12.99"> 165 mm </option>
+<option value="13.19"> 167.5 mm </option>
+<option selected="selected" value="13.38"> 170 mm </option>
+<option value="13.58"> 172.5 mm </option>
+<option value="13.78"> 175 mm </option>
+<option value="13.98"> 177.5 mm </option>
+<option value="14.17"> 180 mm </option>
+<option value="14.57"> 185 mm </option>
+<option value="14.96"> 190 mm </option>
+</select>
+<th colspan="2">Gear units</th>
+<th>
+<select name="modeval" size="1">
+<option selected="selected" value="0"> Gain Ratios </option>
+<option value="1"> Gear inches </option>
+<option value="12.532"> Meters Development </option>
+<option value="40"> MPH @ 40 RPM </option>
+<option value="60"> MPH @ 60 RPM </option>
+<option value="80"> MPH @ 80 RPM </option>
+<option value="90"> MPH @ 90 RPM </option>
+<option value="100"> MPH @ 100 RPM </option>
+<option value="120"> MPH @ 120 RPM </option>
+<option value="64.37"> KPH @ 40 RPM </option>
+<option value="96.56"> KPH @ 60 RPM </option>
+<option value="128.75"> KPH @ 80 RPM </option>
+<option value="144.84"> KPH @ 90 RPM </option>
+<option value="160.93"> KPH @ 100 RPM </option>
+<option value="193.12"> KPH @ 120 RPM </option>
+</select>
