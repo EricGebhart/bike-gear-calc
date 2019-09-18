@@ -1,5 +1,6 @@
 (ns bike-gear-calc.core-test
   (:require [bike-gear-calc.core :as gc]
+            [bike-gear-calc.data :as d]
             [clojure.test :refer [deftest is testing run-tests]]
             #_[cljs.test :refer-macros [deftest is testing run-tests]]))
 

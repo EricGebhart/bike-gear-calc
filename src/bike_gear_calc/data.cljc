@@ -1,65 +1,95 @@
 (ns bike-gear-calc.data)
 
+(defn convert
+  [{:keys [size] :as rest}]
+  (-> (assoc rest
+             :mm (* 25.4 size)
+             :inches size)
+      (dissoc :size)))
 
 (def wheel-sizes
-  [  {:size 35.65 :name "36 x 2.25 / 57-787"}
-   {:size 30.94 :name "32 x 2.125 / 54/686"}
-   {:size 29.90 :name "29 x 3.0 / 75-622"}
-   {:size 29.54 :name "29 x 2.7 / 70-622"}
-   {:size 28.94 :name "29 x 2.3 / 60-622"}
-   {:size 29.13 :name "700 X 56 / 56-622 / 29 x 2.2"}
-   {:size 27.63 :name "29 x 2.1 / 54-622"}
-   {:size 28.94 :name "700 X 50 / 50-622 / 29 x 2.0"}
-   {:size 27.33 :name "29 x 1.9 / 47-622"}
-   {:size 27.86 :name "700 X 44 / 44-622 / 29 x 1.75"}
-   {:size 27.32 :name "700 X 38 / 38-622"}
-   {:size 27.17 :name "700 X 35 / 35-622"}
-   {:size 27 :name "700 X 32 / 32-622"}
-   {:size 26.38 :name "700 X 25 / 25-622"}
-   {:size 26.28 :name "700 X 23 / 23-622"}
-   {:size 26.14 :name "700 X 20 / 20-622"}
-   {:size 28 :name "28 inch (nominal)"}
-   {:size 28.15 :name "28 X 1 1/2 / 40-635"}
-   {:size 26.53 :name "Tubular / Wide"}
-   {:size 26.38 :name "Tubular / Narrow"}
-   {:size 27.18 :name "27 X 1 3/8 / 35-630"}
-   {:size 27.08 :name "27 X 1 1/4 / 32-630"}
-   {:size 27 :name "27 X 1 1/8 / 28-630"}
-   {:size 26 :name "26 inch (nominal)"}
-   {:size 26.88 :name "27 X 1 / 25-630"}
-   {:size 29.97 :name "26 x 4.7 / 119-559 fatbike at 10 PSI"}
-   {:size 29.07 :name "26 x 4.25 / 108-559 fatbike at 10 PSI"}
-   {:size 28.57 :name "26 x 4.0 / 102-559 fatbike at 10 PSI"}
-   {:size 28.17 :name "26 x 3.8 / 97-559 fatbike at 10 PSI"}
-   {:size 26.41 :name "26 X 2.35 / 60-559 / MTB"}
-   {:size 25.94 :name "26 X 2.125 / 54-559 / MTB"}
-   {:size 25.75 :name "26 X 1.9 / 47-559 / MTB"}
-   {:size 24.87 :name "26 X 1.5 / 38-559 / MTB"}
-   {:size 24.47 :name "26 X 1.25 / 32-559 / MTB"}
-   {:size 23.97 :name "26 X 1.0 / 25-559 / MTB"}
-   {:size 28.68 :name "650B (“27.5”) x 3.0 / 76-584 / MTB"}
-   {:size 28.48 :name "650B (“27.5”) x 2.8 / 71-584 / MTB"}
-   {:size 28.18 :name "650B (“27.5”) x 2.5 / 64-584 / MTB"}
-   {:size 27.68 :name "650B (“27.5”) x 2.0 / 51-584 / MTB"}
-   {:size 26.00 :name "650 x 38B / 38-584 / 650B"}
-   {:size 24.70 :name "650 x 28C / 28-571 / 26 road/tri"}
-   {:size 24.46 :name "650 x 25C / 25-571 / 26 road/tri"}
-   {:size 24.31 :name "650 x 23C / 23-571 / 26  road/tri"}
-   {:size 25.91 :name "26 X 1 3/8 / 35-590"}
-   {:size 24 :name  "24  (nominal)"}
-   {:size 21.97 :name "24 x 1 / 25-520"}
-   {:size 24.35 :name "24 x 2.5 / 65-507"}
-   {:size 24.15 :name "24 x 2/3 / 60-507"}
-   {:size 23.95 :name "24 x 2.1 / 54-507"}
-   {:size 20.15 :name "32-451 /20 x 1 3/8"}
-   {:size 19.90 :name "28-451/20 x 1 1/8"}
-   {:size 18.68 :name "20 X 1.75 / 44-406 / BMX"}
-   {:size 18.43 :name "20 X 1.25 / 32-406"}
-   {:size 17.16 :name "18 x 1.5 / 40-355"}
-   {:size 16.6 :name "17 x 1 1/4 / 32-369"}
-   {:size 16.88 :name "16 x 1 1/2 / 40-349"}
-   {:size 16.07 :name "16 x 1 3/8 / 35-349"}
-   {:size 13.46 :name "16 x 1.5 / 37-305"}])
+  [{:name "36 x 2.25 / 57-787", :mm 905.5099999999999, :inches 35.65}
+   {:name "32 x 2.125 / 54/686", :mm 785.876, :inches 30.94}
+   {:name "29 x 3.0 / 75-622", :mm 759.4599999999999, :inches 29.9}
+   {:name "29 x 2.7 / 70-622", :mm 750.3159999999999, :inches 29.54}
+   {:name "29 x 2.3 / 60-622", :mm 735.076, :inches 28.94}
+   {:name "700 X 56 / 56-622 / 29 x 2.2",
+    :mm 739.9019999999999,
+    :inches 29.13}
+   {:name "29 x 2.1 / 54-622", :mm 701.8019999999999, :inches 27.63}
+   {:name "700 X 50 / 50-622 / 29 x 2.0", :mm 735.076, :inches 28.94}
+   {:name "29 x 1.9 / 47-622", :mm 694.1819999999999, :inches 27.33}
+   {:name "700 X 44 / 44-622 / 29 x 1.75",
+    :mm 707.6439999999999,
+    :inches 27.86}
+   {:name "700 X 38 / 38-622", :mm 693.928, :inches 27.32}
+   {:name "700 X 35 / 35-622", :mm 690.118, :inches 27.17}
+   {:name "700 X 32 / 32-622", :mm 685.8, :inches 27}
+   {:name "700 X 25 / 25-622", :mm 670.0519999999999, :inches 26.38}
+   {:name "700 X 23 / 23-622", :mm 667.512, :inches 26.28}
+   {:name "700 X 20 / 20-622", :mm 663.956, :inches 26.14}
+   {:name "28 inch (nominal)", :mm 711.1999999999999, :inches 28}
+   {:name "28 X 1 1/2 / 40-635", :mm 715.0099999999999, :inches 28.15}
+   {:name "Tubular / Wide", :mm 673.862, :inches 26.53}
+   {:name "Tubular / Narrow", :mm 670.0519999999999, :inches 26.38}
+   {:name "27 X 1 3/8 / 35-630", :mm 690.372, :inches 27.18}
+   {:name "27 X 1 1/4 / 32-630", :mm 687.8319999999999, :inches 27.08}
+   {:name "27 X 1 1/8 / 28-630", :mm 685.8, :inches 27}
+   {:name "26 inch (nominal)", :mm 660.4, :inches 26}
+   {:name "27 X 1 / 25-630", :mm 682.752, :inches 26.88}
+   {:name "26 x 4.7 / 119-559 fatbike at 10 PSI",
+    :mm 761.2379999999999,
+    :inches 29.97}
+   {:name "26 x 4.25 / 108-559 fatbike at 10 PSI",
+    :mm 738.3779999999999,
+    :inches 29.07}
+   {:name "26 x 4.0 / 102-559 fatbike at 10 PSI",
+    :mm 725.678,
+    :inches 28.57}
+   {:name "26 x 3.8 / 97-559 fatbike at 10 PSI",
+    :mm 715.518,
+    :inches 28.17}
+   {:name "26 X 2.35 / 60-559 / MTB", :mm 670.814, :inches 26.41}
+   {:name "26 X 2.125 / 54-559 / MTB", :mm 658.876, :inches 25.94}
+   {:name "26 X 1.9 / 47-559 / MTB", :mm 654.05, :inches 25.75}
+   {:name "26 X 1.5 / 38-559 / MTB", :mm 631.698, :inches 24.87}
+   {:name "26 X 1.25 / 32-559 / MTB",
+    :mm 621.5379999999999,
+    :inches 24.47}
+   {:name "26 X 1.0 / 25-559 / MTB", :mm 608.838, :inches 23.97}
+   {:name "650B (“27.5”) x 3.0 / 76-584 / MTB",
+    :mm 728.472,
+    :inches 28.68}
+   {:name "650B (“27.5”) x 2.8 / 71-584 / MTB",
+    :mm 723.3919999999999,
+    :inches 28.48}
+   {:name "650B (“27.5”) x 2.5 / 64-584 / MTB",
+    :mm 715.7719999999999,
+    :inches 28.18}
+   {:name "650B (“27.5”) x 2.0 / 51-584 / MTB",
+    :mm 703.072,
+    :inches 27.68}
+   {:name "650 x 38B / 38-584 / 650B", :mm 660.4, :inches 26.0}
+   {:name "650 x 28C / 28-571 / 26 road/tri", :mm 627.38, :inches 24.7}
+   {:name "650 x 25C / 25-571 / 26 road/tri", :mm 621.284, :inches 24.46}
+   {:name "650 x 23C / 23-571 / 26  road/tri",:mm 617.4739999999999,
+    :inches 24.31}
+   {:name "26 X 1 3/8 / 35-590", :mm 658.1139999999999, :inches 25.91}
+   {:name "24  (nominal)", :mm 609.5999999999999, :inches 24}
+   {:name "24 x 1 / 25-520", :mm 558.0379999999999, :inches 21.97}
+   {:name "24 x 2.5 / 65-507", :mm 618.49, :inches 24.35}
+   {:name "24 x 2/3 / 60-507", :mm 613.41, :inches 24.15}
+   {:name "24 x 2.1 / 54-507", :mm 608.3299999999999, :inches 23.95}
+   {:name "32-451 /20 x 1 3/8", :mm 511.80999999999995, :inches 20.15}
+   {:name "28-451/20 x 1 1/8", :mm 505.4599999999999, :inches 19.9}
+   {:name "20 X 1.75 / 44-406 / BMX", :mm 474.472, :inches 18.68}
+   {:name "20 X 1.25 / 32-406", :mm 468.12199999999996, :inches 18.43}
+   {:name "18 x 1.5 / 40-355", :mm 435.864, :inches 17.16}
+   {:name "17 x 1 1/4 / 32-369", :mm 421.64, :inches 16.6}
+   {:name "16 x 1 1/2 / 40-349", :mm 428.75199999999995, :inches 16.88}
+   {:name "16 x 1 3/8 / 35-349", :mm 408.178, :inches 16.07}
+   {:name "16 x 1.5 / 37-305", :mm 341.884, :inches 13.46}]
+  )
 
 
 (def internal-hubs
@@ -67,23 +97,23 @@
 
    {:ratios [1.000 0.682] :name "Bendix 2 speed Red Band, Yellow Band"}
    {:ratios [1.467 1.000] :name "Bendix 2 speed Blue Band"}
-   {:ratios [1.333 1 .75] :name "Brampton (old, not Brompton) 3 speed Sturmey Archer AW copy"}
-   {:ratios [1.333 1 .75] :name "Hercules 3 speed Sturmey Archer AW copy"}
-   {:ratios [1.333 1 .75] :name "NK 3 speed Sturmey Archer AW copy"}
+   {:ratios [1.333 1 0.75] :name "Brampton (old, not Brompton) 3 speed Sturmey Archer AW copy"}
+   {:ratios [1.333 1 0.75] :name "Hercules 3 speed Sturmey Archer AW copy"}
+   {:ratios [1.333 1 0.75] :name "NK 3 speed Sturmey Archer AW copy"}
 
    {:ratios [1.75 0.5] :name "NuVinci continuously variable N171"}
    {:ratios [1.80 0.5] :name "NuVinci continuously variable N180"}
    {:ratios [1.80 0.5] :name "NuVinci continuously variable N360"}
    {:ratios [1.90 0.5] :name "NuVinci continuously variable N380"}
-   {:ratios [1.467 1.292 1.135 1 .881 .774 .682 .600 .528 .464 .409 .360 .316 .279] :name "Rohloff 14 speed Speedhub"}
+   {:ratios [1.467 1.292 1.135 1 0.881 0.774 0.682 0.600 0.528 0.464 0.409 0.360 0.316 0.279] :name "Rohloff 14 speed Speedhub"}
 
-   {:ratios [1.000 .762] :name "Sachs 2 speed Doppel Torpedo"}
+   {:ratios [1.000 0.762] :name "Sachs 2 speed Doppel Torpedo"}
    {:ratios [1.362 1.000] :name "Sachs 2 speed Duomatic, Automatic"}
    {:ratios [1.362 1.000] :name "SRAM 2 speed Automatix"}
-   {:ratios [1.000 .738] :name "Sachs 2 speed w/6 cogs Orbit"}
-   {:ratios [1.250 1 .800] :name "Fichtel & Sachs 3 speed Universal Dreigang"}
+   {:ratios [1.000 0.738] :name "Sachs 2 speed w/6 cogs Orbit"}
+   {:ratios [1.250 1 0.800] :name "Fichtel & Sachs 3 speed Universal Dreigang"}
    {:ratios [1.00 0.750 0.600] :name "Fichtel & Sachs 3 speed 25, 29"}
-   {:ratios [1.333 1 .750] :name "Fichtel & Sachs 3 speed 53, 55"}
+   {:ratios [1.333 1 0.750] :name "Fichtel & Sachs 3 speed 53, 55"}
    {:ratios [1.362 1.000 0.734] :name "(Fichtel &) Sachs 3 speed 415, H3102"}
    {:ratios [1.362 1.000 0.734] :name "(Fichtel &) Sachs 3 speed w/coaster brake 515, H3111"}
    {:ratios [1.362 1.000 0.734] :name "SRAM 3 speed Spectro T3 3105"}
@@ -111,64 +141,64 @@
 
    {:ratios [2.5 1.00] :name "Schlumpf 2 speed High Speed Drive bottom bracket"}
    {:ratios [1.65 1.00] :name "Schlumpf 2 speed Speed Drive bottom bracket"}
-   {:ratios [1.00 .400] :name "Schlumpf 2 speed Mountain Drive bottom bracket"}
+   {:ratios [1.00 0.400] :name "Schlumpf 2 speed Mountain Drive bottom bracket"}
 
-   {:ratios [1.333 1 .750] :name "Shimano 3 speed (old) 333, F, FA, G, SG 3S21, G 3S23"}
-   {:ratios [1.333 1 .750] :name "Shimano 3 speed w/coaster brake (old) 3SC, 3CC"}
-   {:ratios [1.364 1 .733] :name "Shimano 3 speed Nexus Inter 3"}
+   {:ratios [1.333 1 0.750] :name "Shimano 3 speed (old) 333, F, FA, G, SG 3S21, G 3S23"}
+   {:ratios [1.333 1 0.750] :name "Shimano 3 speed w/coaster brake (old) 3SC, 3CC"}
+   {:ratios [1.364 1 0.733] :name "Shimano 3 speed Nexus Inter 3"}
    {:ratios [1.843 1.500 1.244 1.000] :name "Shimano 4 speed Nexus Inter 4"}
    {:ratios [1.545 1.335 1.159 1.001 0.750] :name "Shimano 5 speed Nexus Inter 5"}
    {:ratios [1.545 1.335 1.145 0.989 0.843 0.741 0.632] :name "Shimano 7 speed Nexus Inter 7"}
    {:ratios [1.615 1.419 1.223 1 0.851 0.748 0.644 0.527] :name "Shimano 8 speed Nexus, Alfine"}
    {:ratios [2.153 1.888 1.667 1.462 1.292 1.134 0.995 0.878 0.77 0.681 0.527] :name "Shimano 11 Speed Alfine"}
 
-   {:ratios [1.333 1 .75] :name "SunTour 3 speed Sturmey Archer AW copy"}
-   {:ratios [1.333 1 .75] :name "Steyr 3 speed Sturmey Archer AW copy"}
-   {:ratios [1 .714] :name "Sturmey Archer 2 speed S2 (1966)"}
+   {:ratios [1.333 1 0.75] :name "SunTour 3 speed Sturmey Archer AW copy"}
+   {:ratios [1.333 1 0.75] :name "Steyr 3 speed Sturmey Archer AW copy"}
+   {:ratios [1 0.714] :name "Sturmey Archer 2 speed S2 (1966)"}
    {:ratios [1.38 1.00] :name "Sturmey Archer 2 speed S2, S2C, B2C (2010)"}
-   {:ratios [1 .750] :name "Sturmey Archer 2 speed wide ratio T,TB,TBC,TBF,TBFC,TF"}
-   {:ratios [1 .8654] :name "Sturmey Archer 2 speed close ratio TC"}
-   {:ratios [1.250 1 .800] :name "Sturmey Archer 3 speed original 1902"}
-   {:ratios [1.0724 1 .9324] :name "Sturmey Archer 3 speed ultra close ratio AR"}
-   {:ratios [1.067 1 .923] :name "Sturmey Archer 3 speed close ratio AC"}
-   {:ratios [1.1556 1 .8654] :name "Sturmey Archer 3 speed medium ratio AM"}
-   {:ratios [1.125 1 .8889] :name "Sturmey Archer 3 speed close ratio KS"}
-   {:ratios [1.167 1 .857] :name "Sturmey Archer 3 speed medium ratio KSW"}
-   {:ratios [1 .90 .75] :name "Sturmey Archer 3 speed fixed gear ASC"}
-   {:ratios [1.00 .750 .625] :name "Sturmey Archer 3 speed fixed gear S3X"}
-   {:ratios [1.313 1 .762] :name "Sturmey Archer 3 speed A (not AW!), C, F, FN, FX, N, S, V, X"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed wide ratio AW, K, KB, KBC, KT, KTC"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed wide ratio RS RF3, S RF3"}
-   {:ratios [1.385 1 .722] :name "Sturmey Archer 3 speed super wide ratio SW"}
-   {:ratios [1.568 1 .638] :name "Sturmey Archer 3 speed special Brompton wide ratio"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed w/coaster brake AWC, S3C, S RC3, TCW"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed w/band brake, wide body SX RB3"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed w/disk brake S RK3, SX RK3"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed w/drum brake AB, AB/C, AB3, AT3, AWB"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed w/drum brake SAB, S3B, SBR, X RD3, RX RD3, XL RD3"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed for 8/9 speed cassette CS RF3"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed for 8/9 speed cassette w/disk brake CS RK3"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed w/dyno AG"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed gearbox for tricycle w/reverse TS RF3"}
-   {:ratios [1.333 1 .75] :name "Sturmey Archer 3 speed gearbox for tricycle w/coaster TS RC3"}
-   {:ratios [1.091 1 .900 .750] :name "Sturmey Archer 4 speed close ratio AF"}
-   {:ratios [1.091 1 .900 .750] :name "Sturmey Archer 4 speed close ratio FC"}
-   {:ratios [1.125 1 .857 .6667] :name "Sturmey Archer 4 speed medium ratio FM"}
-   {:ratios [1.267 1 .789 .667] :name "Sturmey Archer 4 speed wide ratio FW"}
-   {:ratios [1.267 1 .789 .667] :name "Sturmey Archer 4 speed wide ratio w/drum brake FB"}
-   {:ratios [1.267 1 .789 .667] :name "Sturmey Archer 4 speed w/dyno FG"}
-   {:ratios [1.5 1.125 1 .857 .6667] :name "Sturmey Archer 5 speed (FM modified)"}
-   {:ratios [1.50 1.267 1 .789 .6667] :name "Sturmey Archer 5 speed S5, S5.1, S5/2, 5 Speed Alloy."}
-   {:ratios [1.50 1.267 1 .789 .6667] :name "Sturmey Archer 5 speed 5 Star, Sprinter S5, S RF5, X RF5"}
-   {:ratios [1.600 1.333 1 .750 .625] :name "Sturmey Archer 5 speed wide ratio (2009 ) S RF5(W), X RF5(W)"}
-   {:ratios [1.50 1.267 1 .789 .6667] :name "Sturmey Archer 5 speed w/coaster brake Sprinter S5C, S RC5"}
-   {:ratios [1.60 1.333 1 .750 .625] :name "Sturmey Archer 5 speed wide ratio w/coaster brake (2009 ) S5C(W), S RC5(W)"}
-   {:ratios [1.60 1.333 1 .750 .625] :name "Sturmey Archer 3 speed gearbox for tricycle w/coaster QS RC5"}
-   {:ratios [1.50 1.267 1 .789 .6667] :name "Sturmey Archer 5 speed w/drum brake 5 Star, AB 5, AT5, SAB 5, X RD5"}
-   {:ratios [1.60 1.333 1 .750 .625] :name "Sturmey Archer 5 speed wide ratio w/drum brake (2009 ) X RD5 (W), XL RD5(W)"}
-   {:ratios [1.667 1.450 1.243 1.000 804 .690 .600] :name "Sturmey Archer 7 speed Sprinter 7, X R7"}
-   {:ratios [1.667 1.450 1.243 1.000 804 .690 .600] :name "Sturmey Archer 7 speed w/coaster brake Sprinter 7"}
-   {:ratios [1.667 1.450 1.243 1.000 804 .690 .600] :name "Sturmey Archer 7 speed w/drum brake AT7, X RD7"}
+   {:ratios [1 0.750] :name "Sturmey Archer 2 speed wide ratio T,TB,TBC,TBF,TBFC,TF"}
+   {:ratios [1 0.8654] :name "Sturmey Archer 2 speed close ratio TC"}
+   {:ratios [1.250 1 0.800] :name "Sturmey Archer 3 speed original 1902"}
+   {:ratios [1.0724 1 0.9324] :name "Sturmey Archer 3 speed ultra close ratio AR"}
+   {:ratios [1.067 1 0.923] :name "Sturmey Archer 3 speed close ratio AC"}
+   {:ratios [1.1556 1 0.8654] :name "Sturmey Archer 3 speed medium ratio AM"}
+   {:ratios [1.125 1 0.8889] :name "Sturmey Archer 3 speed close ratio KS"}
+   {:ratios [1.167 1 0.857] :name "Sturmey Archer 3 speed medium ratio KSW"}
+   {:ratios [1 0.90 0.75] :name "Sturmey Archer 3 speed fixed gear ASC"}
+   {:ratios [1.00 0.750 0.625] :name "Sturmey Archer 3 speed fixed gear S3X"}
+   {:ratios [1.313 1 0.762] :name "Sturmey Archer 3 speed A (not AW!), C, F, FN, FX, N, S, V, X"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed wide ratio AW, K, KB, KBC, KT, KTC"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed wide ratio RS RF3, S RF3"}
+   {:ratios [1.385 1 0.722] :name "Sturmey Archer 3 speed super wide ratio SW"}
+   {:ratios [1.568 1 0.638] :name "Sturmey Archer 3 speed special Brompton wide ratio"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed w/coaster brake AWC, S3C, S RC3, TCW"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed w/band brake, wide body SX RB3"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed w/disk brake S RK3, SX RK3"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed w/drum brake AB, AB/C, AB3, AT3, AWB"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed w/drum brake SAB, S3B, SBR, X RD3, RX RD3, XL RD3"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed for 8/9 speed cassette CS RF3"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed for 8/9 speed cassette w/disk brake CS RK3"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed w/dyno AG"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed gearbox for tricycle w/reverse TS RF3"}
+   {:ratios [1.333 1 0.75] :name "Sturmey Archer 3 speed gearbox for tricycle w/coaster TS RC3"}
+   {:ratios [1.091 1 0.900 0.750] :name "Sturmey Archer 4 speed close ratio AF"}
+   {:ratios [1.091 1 0.900 0.750] :name "Sturmey Archer 4 speed close ratio FC"}
+   {:ratios [1.125 1 0.857 0.6667] :name "Sturmey Archer 4 speed medium ratio FM"}
+   {:ratios [1.267 1 0.789 0.667] :name "Sturmey Archer 4 speed wide ratio FW"}
+   {:ratios [1.267 1 0.789 0.667] :name "Sturmey Archer 4 speed wide ratio w/drum brake FB"}
+   {:ratios [1.267 1 0.789 0.667] :name "Sturmey Archer 4 speed w/dyno FG"}
+   {:ratios [1.5 1.125 1 0.857 0.6667] :name "Sturmey Archer 5 speed (FM modified)"}
+   {:ratios [1.50 1.267 1 0.789 0.6667] :name "Sturmey Archer 5 speed S5, S5.1, S5/2, 5 Speed Alloy."}
+   {:ratios [1.50 1.267 1 0.789 0.6667] :name "Sturmey Archer 5 speed 5 Star, Sprinter S5, S RF5, X RF5"}
+   {:ratios [1.600 1.333 1 0.750 0.625] :name "Sturmey Archer 5 speed wide ratio (2009 ) S RF5(W), X RF5(W)"}
+   {:ratios [1.50 1.267 1 0.789 0.6667] :name "Sturmey Archer 5 speed w/coaster brake Sprinter S5C, S RC5"}
+   {:ratios [1.60 1.333 1 0.750 0.625] :name "Sturmey Archer 5 speed wide ratio w/coaster brake (2009 ) S5C(W), S RC5(W)"}
+   {:ratios [1.60 1.333 1 0.750 0.625] :name "Sturmey Archer 3 speed gearbox for tricycle w/coaster QS RC5"}
+   {:ratios [1.50 1.267 1 0.789 0.6667] :name "Sturmey Archer 5 speed w/drum brake 5 Star, AB 5, AT5, SAB 5, X RD5"}
+   {:ratios [1.60 1.333 1 0.750 0.625] :name "Sturmey Archer 5 speed wide ratio w/drum brake (2009 ) X RD5 (W), XL RD5(W)"}
+   {:ratios [1.667 1.450 1.243 1.000 804 0.690 0.600] :name "Sturmey Archer 7 speed Sprinter 7, X R7"}
+   {:ratios [1.667 1.450 1.243 1.000 804 0.690 0.600] :name "Sturmey Archer 7 speed w/coaster brake Sprinter 7"}
+   {:ratios [1.667 1.450 1.243 1.000 804 0.690 0.600] :name "Sturmey Archer 7 speed w/drum brake AT7, X RD7"}
    {:ratios [3.054 2.384 2.106 1.858 1.644 1.450 1.281 1] :name "Sturmey Archer 8 speed (2004 2008) X RF8"}
    {:ratios [3.239 2.485 2.186 1.931 1.677 1.481 1.303 1] :name "Sturmey Archer 8 speed wide ratio (2009 ) X RF8(W)"}
    {:ratios [3.054 2.384 2.106 1.858 1.644 1.450 1.281 1] :name "Sturmey Archer 8 speed w/drum brake (2004 2008) X RD8"}
