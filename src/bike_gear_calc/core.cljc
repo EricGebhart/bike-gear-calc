@@ -71,20 +71,21 @@
   ([rpm dev]
    (rpm->speed rpm dev false))
   ([rpm dev mph]
-   (let [convert (if mph 1.609 1)]
+   (let [convert (if mph 0.6214 1)]
      (-> rpm
          (* dev)
-         (/ 600)
-         (/ convert)
-         (/ 10)))))
+         (* 60)
+         (/ 1000)
+         (* convert)
+         float))))
 
 (defn calc-rpm-speeds
   "calculate the speeds for rpms from 50-140 for the given meters of development."
   ([development]
    (calc-rpm-speeds development false))
   ([development mph]
-   (map #([%1  (rpm->speed %1 development mph)])
-        (range 50 140 10))))
+   (map (fn [rpm] [rpm  (rpm->speed rpm development mph)])
+        (range 50 150 10))))
 
 
 ;; Calculate skid patches.
@@ -93,7 +94,7 @@
   [a b]
   (if (= b 0)
     a
-    (gcd b (mod a b))))
+    (recur b (mod a b))))
 
 (defn skid-patches
   "calculate the skid patches using the gcd for the ratio.
@@ -110,7 +111,7 @@
                             skid-patches)]
     [skid-patches ambi-skid-patches]))
 
-(defn cluster-gear-map
+(defn sprocket-gear-map
   "given a chainring, a sprocket, wheel-dia and cranklength
   return a map of development."
   [r s wd cl]
@@ -119,56 +120,50 @@
    :meters-dev  (meters-of-development r s wd)
    :gain-ratio  (gain-ratio r s wd cl)})
 
-(defn hub-gear-map
-  "given a ratio, gear-inches, meters-development and gain-ratio return
-  a map. "
+(defn ratio-gear-map
+  "for internal hubs, given a ratio, gear-inches, meters-development
+  and gain-ratio return a map. "
   [ratio gi md gr]
   {:gear-inches (* ratio gi)
    :meters-dev (* ratio md)
    :gain-ratio (* ratio gr)})
 
 (defn gear-map
-  "Given wheel-dia a chainring, crank-length
+  "Given a chainring, crank length, wheel diameter
   and either a sprocket and vector of hub ratios
   or a vector of sprockets create a map of
   gain-ratio, gear-inches and meters of development "
-  ([chainring cluster wheel-dia crank-length]
-   (let [gm {:ring chainring}]
+  ([ring sprocket-vec wheel-dia crank-length]
+   (let [gm {:ring ring}]
      (into
       gm {:gears
           (into
            []
-           (map #(cluster-gear-map chainring %1
-                                   wheel-dia
-                                   crank-length)
-                cluster))})))
+           (map #(sprocket-gear-map ring %1
+                                    wheel-dia
+                                    crank-length)
+                sprocket-vec))})))
 
-  ([chainring sprocket hub-ratios wheel-dia crank-length]
-   (let [gi (gear-inches chainring sprocket wheel-dia)
-         md (meters-of-development chainring sprocket wheel-dia)
-         gr (gain-ratio chainring sprocket wheel-dia crank-length)
-         hm {:ring chainring :sprocket sprocket}]
+  ([ring sprocket hub-ratios wheel-dia crank-length]
+   (let [gm (sprocket-gear-map ring sprocket wheel-dia crank-len)
+         gi (:gear-inches gm)
+         md (:meters-dev gm)
+         gr (:gain-ratio gm)
+         hm {:ring ring :sprocket sprocket}]
      (into
       hm
       {:gears (into
                []
-               (map #(hub-gear-map %1 gi md gr)
+               (map #(ratio-gear-map %1 gi md gr)
                     hub-ratios))}))))
 
 (defn fixed-gear-map
   "given wheel-dia chainring and sprocket create a map
   of gain-ratio, gear-inches meters of development and skid-patches."
-  [chainring sprocket wheel-dia crank-length]
-  (let [gi (gear-inches chainring sprocket wheel-dia)
-        md (meters-of-development chainring sprocket wheel-dia)
-        gr (gain-ratio chainring sprocket wheel-dia crank-length)
-        sd (skid-patches chainring sprocket)
-        hm {:ring chainring
-            :sprocket sprocket
-            :gear-inches gi
-            :meters-dev md
-            :gain-raiton gr
-            :skid-patches sd}]))
+  [ring sprocket wheel-dia crank-len]
+  (let[gm (sprocket-gear-map ring sprocket wheel-dia crank-len)]
+    (into gm {:ring ring
+              :skid-patches (skid-patches ring sprocket)})))
 
 (defn close-fgear-maps
   "given a chain-ring and sprocket return a list
@@ -177,5 +172,5 @@
   (let [cg (close-gears ring sprocket)]
     (into
      []
-     (map #(fixed-gear-map %1 %2 wheel-dia crank-length)
+     (map #(fixed-gear-map (first %) (last %)  wheel-dia crank-length)
           cg))))
