@@ -17,9 +17,10 @@ cassette/freewheel configurations and the internal ratios for a number
 of internally geared hubs
 
 Wheel sizes used in the calculations are the diameter in millimeters. 
-They are where errors any errors can be introduced, it might be best to
-just measure yours. But then an error of few millimeters isn't going to
-change things that much.
+They are where any errors can be introduced, it might be best to
+just measure yours instead of using the wheel sizes from data. 
+But then again an error of few millimeters isn't going to change things 
+that much.
 
 The original idea was that this library provides everything needed to create 
 a nice gear calculator SPA in clojurescript. But then, well, it's so simple,
