@@ -1,9 +1,42 @@
 (ns bike-gear-calc.core
   (:require [clojure.math.numeric-tower :as math] ))
 
+;; so maybe this should be a defrecord. But not yet.
+;; these values go to so many functions. It's a lot
+;; easier to do this. Looking defrecordish.
+(defn fixed-gear-bike
+  "Create a map of attributes for a bike with one
+  chainring and one sprocket to pass around."
+  [ring sprocket wheel-dia crank-len]
+  {:ring ring
+   :sprocket sprocket
+   :wheel-dia wheel-dia
+   :crank-len crank-len
+   :ratio (/ ring sprocket)})
+
+(defn hub-gear-bike
+  "Create a map of attributes for a bike with one
+  chainring and one sprocket to pass around."
+  [ring sprocket wheel-dia crank-len]
+  {:ring ring
+   :sprocket sprocket
+   :wheel-dia wheel-dia
+   :crank-len crank-len
+   :ratio (/ ring sprocket)
+   :internal-ratios []})
+
+(defn deraileur-bike
+  "Create a map of attributes for a bike with multiple
+  chainrings and sprockets to pass around."
+  [rings freewheels wheel-dia crank-len]
+  {:rings []
+   :sprocket-vec []
+   :wheel-dia wheel-dia
+   :crank-len crank-len})
+
 (defn gear-inches
-  "given the ring chainring size, the sprocket size and the wheel
-  wheel-dia in mm, give the gear inches. "
+  "given the chainring size, sprocket size and the wheel
+  diameter in mm, give the gear inches. "
   [ring sprocket wheel-dia]
   (-> (/ wheel-dia 25.4)
       (* (/ ring sprocket))
@@ -19,14 +52,11 @@
        (/ 1000)
        float))
 
-;; divide the wheel radius in mm, by the crank length in mm. this will
-;; yield a single radius ratio applicable to all of the gears of a given
-;; bike. The individual gear ratios are calculated as with gear inches,
-;; using this radius ratio instead of the wheel size.
-
 (defn gain-ratio
-  [ring sprocket wheel-dia crank-length]
-  (let [crank-ratio (/ (/ wheel-dia 2) crank-length)]
+  "calculate the gain ratio for a given chainring, sprocket, wheel diameter
+  and crank length. "
+  [ring sprocket wheel-dia crank-len]
+  (let [crank-ratio (/ (/ wheel-dia 2) crank-len)]
     (-> crank-ratio
         (* (/ ring sprocket))
         float)))
@@ -35,36 +65,29 @@
   "give a ring chainring size, a sprocket sprocket size and a
   range tolerence return true or false if the gears fall
   within tolerance."
-  [ring sprocket ratio ratio-range]
-  (< (math/abs (- ratio (/ ring sprocket)))
+  [ring sprocket gratio ratio-range]
+  (< (math/abs (- gratio (/ ring sprocket)))
      ratio-range))
 
 (defn create-gear-combinations
+  "Create a list of chainring and sprocket pairs for
+  chainrings between 28 and 61 and sprockets between 9 and 25."
   []
   (mapcat identity
           (map (fn [ring]
                  (map (fn [s] [ring s]) (range 9 25)))
                (range 28 61))))
 
-(defn cclose-gears
-  ([ratio]
-   (let [gear-combos (create-gear-combinations)
-         ratio-range (* ratio 0.02)]
-     (filter #(ratio-filter (first %) (second %) ratio ratio-range)
-             gear-combos)))
-  ([ring sprocket]
-   (close-gears (/ ring sprocket))))
-
 (defn close-gears
-  "Given a chainring and sprocket size or a ratio give sprocket an array of gears
+  "Given a chainring and sprocket size or a ratio give an array of gears
   which have a ratio within 2%."
-  ([ratio]
+  ([gratio]
    (let [gear-combos (create-gear-combinations)
-         ratio-range (* ratio 0.02)]
-     (filter #(ratio-filter (first %) (second %)  ratio ratio-range)
+         ratio-range (* gratio 0.02)]
+     (filter #(ratio-filter (first %) (second %)  gratio ratio-range)
              gear-combos)))
-  ([ring sprocket]
-   (cg (/ ring sprocket))))
+  ([ring sprocket]                   ;take this out when defrecords are working.
+   (close-gears (/ ring sprocket))))
 
 (defn rpm->speed
   "calculate the speed for a given rpm and meters of development."
@@ -81,10 +104,10 @@
 
 (defn calc-rpm-speeds
   "calculate the speeds for rpms from 50-140 for the given meters of development."
-  ([development]
-   (calc-rpm-speeds development false))
-  ([development mph]
-   (map (fn [rpm] [rpm  (rpm->speed rpm development mph)])
+  ([m-dev]
+   (calc-rpm-speeds m-dev false))
+  ([m-dev mph]
+   (map (fn [rpm] [rpm  (rpm->speed rpm m-dev mph)])
         (range 50 150 10))))
 
 
@@ -123,54 +146,51 @@
 (defn ratio-gear-map
   "for internal hubs, given a ratio, gear-inches, meters-development
   and gain-ratio return a map. "
-  [ratio gi md gr]
-  {:gear-inches (* ratio gi)
-   :meters-dev (* ratio md)
-   :gain-ratio (* ratio gr)})
+  [ratio & {:keys [gear-inches meters-dev gain-ratio]}]
+  {:gear-inches (* ratio gear-inches)
+   :meters-dev (* ratio meters-dev)
+   :gain-ratio (* ratio gain-ratio)})
 
-(defn gear-map
+(defn derailer-gear-map
   "Given a chainring, crank length, wheel diameter
-  and either a sprocket and vector of hub ratios
-  or a vector of sprockets create a map of
+  and a vector of sprockets create a vector of maps of
   gain-ratio, gear-inches and meters of development "
-  ([ring sprocket-vec wheel-dia crank-length]
+  ([ring sprocket-vec wheel-dia crank-len]
    (let [gm {:ring ring}]
-     (into
-      gm {:gears
-          (into
-           []
-           (map #(sprocket-gear-map ring %1
-                                    wheel-dia
-                                    crank-length)
-                sprocket-vec))})))
+     (into gm
+           {:gears
+            (into []
+                  (map #(sprocket-gear-map ring %1
+                                           wheel-dia
+                                           crank-len)
+                       sprocket-vec))}))))
 
-  ([ring sprocket hub-ratios wheel-dia crank-length]
-   (let [gm (sprocket-gear-map ring sprocket wheel-dia crank-len)
-         gi (:gear-inches gm)
-         md (:meters-dev gm)
-         gr (:gain-ratio gm)
-         hm {:ring ring :sprocket sprocket}]
-     (into
-      hm
-      {:gears (into
-               []
-               (map #(ratio-gear-map %1 gi md gr)
-                    hub-ratios))}))))
+(defn hub-gear-map
+  "Given a chainring, sprocket, a vector of ratios,
+  crank length and wheel diameter create a vector of
+  maps of gain-ratio, gear-inches and meters of development "
+  [ring sprocket hub-ratios wheel-dia crank-len]
+  (let [gm (sprocket-gear-map ring sprocket wheel-dia crank-len)
+        hm {:ring ring :sprocket sprocket}]
+    (into hm
+          {:gears
+           (into []
+                 (map #(ratio-gear-map %1 gm)
+                      hub-ratios))}))
 
-(defn fixed-gear-map
-  "given wheel-dia chainring and sprocket create a map
+  (defn fixed-gear-map
+    "given wheel-dia chainring and sprocket create a map
   of gain-ratio, gear-inches meters of development and skid-patches."
-  [ring sprocket wheel-dia crank-len]
-  (let[gm (sprocket-gear-map ring sprocket wheel-dia crank-len)]
-    (into gm {:ring ring
-              :skid-patches (skid-patches ring sprocket)})))
+    [ring sprocket wheel-dia crank-len]
+    (let[gm (sprocket-gear-map ring sprocket wheel-dia crank-len)]
+      (into gm {:ring ring
+                :skid-patches (skid-patches ring sprocket)}))))
 
-(defn close-fgear-maps
-  "given a chain-ring and sprocket return a list
-  of gear maps of gears within tolerance. "
-  [ring sprocket wheel-dia crank-length]
+(defn close-fixed-gear-maps
+  "given a chainring and sprocket return a list
+  of gear maps of gears within 2% of the original ratio. "
+  [ring sprocket wheel-dia crank-len]
   (let [cg (close-gears ring sprocket)]
-    (into
-     []
-     (map #(fixed-gear-map (first %) (last %)  wheel-dia crank-length)
-          cg))))
+    (into []
+          (map #(fixed-gear-map (first %) (last %)  wheel-dia crank-len)
+               cg))))

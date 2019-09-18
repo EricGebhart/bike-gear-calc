@@ -10,7 +10,8 @@ given cadence/RPMs.
 
 At this point tests are correct, but float comparisons are not always.
 
-The API is still in a bit of flux, but settling. I'm not quite happy with it.
+_The API is still in a bit of flux, I'm not happy with it. I think it's
+going to need at least a map, maybe a defrecord._
 
 The data namespace has maps for wheel size, crank lengths, standard
 cassette/freewheel configurations and the internal ratios for a number
@@ -36,6 +37,14 @@ patches is also well known, mostly being discussed on the bike forums.
 Gain Ratios were Sheldon's idea. It has been many years now, and I don't
 know that anyone uses them. But I made a function for them
 in case anyone likes them.
+
+In sheldon's words.  Gain ratio is calculated like this.
+
+Divide the wheel radius in mm, by the crank length in mm. this will
+yield a single radius ratio applicable to all of the gears of a given
+bike. The individual gear ratios are calculated as with gear inches,
+using this radius ratio instead of the wheel size.
+
 
 ## To do.
 

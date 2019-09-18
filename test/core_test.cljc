@@ -133,7 +133,7 @@
             :meters-dev 2.501,
             :gain-ratio 2.35}))))
 
-(deftest gear-map-test
+(deftest derailer-gear-map-test
   (is (= (gc/gear-map 42 [16 18 20 22] 685.8 170)
          {:ring 42,
           :gears
@@ -153,6 +153,27 @@
             :gear-inches 51.545456,
             :meters-dev 4.1131444,
             :gain-ratio 3.8507488}]}))
+  (is (= (gc/gear-map 42 13 [0.25 0.5 1 1.4 2.0] 685.8 170)
+         {:ring 42,
+          :sprocket 13,
+          :gears
+          [{:gear-inches 21.80769157409668,
+            :meters-dev 1.7401765584945679,
+            :gain-ratio 1.6291629076004028}
+           {:gear-inches 43.61538314819336,
+            :meters-dev 3.4803531169891357,
+            :gain-ratio 3.2583258152008057}
+           {:gear-inches 87.23076629638672,
+            :meters-dev 6.9607062339782715,
+            :gain-ratio 6.516651630401611}
+           {:gear-inches 122.1230728149414,
+            :meters-dev 9.744988727569579,
+            :gain-ratio 9.123312282562255}
+           {:gear-inches 174.46153259277344,
+            :meters-dev 13.921412467956543,
+            :gain-ratio 13.033303260803223}]})))
+
+(deftest hub-gear-map-test
   (is (= (gc/gear-map 42 13 [0.25 0.5 1 1.4 2.0] 685.8 170)
          {:ring 42,
           :sprocket 13,
@@ -196,8 +217,8 @@
           :ring 39,
           :skid-patches [22 44]})))
 
-(deftest close-fgear-maps-test
-  (is (= (gc/close-fgear-maps 42 18 685.8 170)
+(deftest close-fixed-gear-maps-test
+  (is (= (gc/close-fixed-gear-maps 42 18 685.8 170)
          [{:sprocket 12,
            :gear-inches 63.0,
            :meters-dev 5.0271764,
