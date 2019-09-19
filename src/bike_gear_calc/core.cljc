@@ -64,3 +64,17 @@
    (assoc (sprocket-gear-map
            (assoc bike :sprocket s))
           :sprocket s)))
+
+(defn any-bike
+  "Create a map of attributes for a bike with
+  all attributes needed for any bike."
+  []
+  {:ring nil
+   :sprocket nil
+   :rings []
+   :sprockets []
+   :wheel-dia 670
+   :crank-len 170
+   :ratio 1
+   :internal-ratios []
+   :get-close-gears true})

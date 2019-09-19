@@ -24,20 +24,20 @@
 (defn close-gear-pairs
   "Given a fixed-gear-bike map return a list of fixed-gear-bike maps
   which have a ratio within 2%."
-  [{:keys [ratio wheel-dia crank-len]}]
+  [ratio]
   (let [gear-combos (create-gear-combinations)
         ratio-range (* ratio 0.02)]
     (filter #(ratio-filter (first %) (second %)  ratio ratio-range)
             gear-combos)))
 
-(declare new-fixie)
+(declare new-bike)
 
 (defn close-gears
   "given a fixed-gear-bike map return a vector of gear maps
    of gears within 2% of the original ratio. "
-  [{:keys [ratio ring sprocket wheel-dia crank-len]}]
+  [{:keys [ratio ring sprocket wheel-dia crank-len] :as bike}]
   (->> (close-gear-pairs ratio)
-       (map #(new-fixie (first %) (second %) wheel-dia crank-len false))
+       (map #(new-bike (first %) (second %) wheel-dia crank-len false))
        (into [])))
 
 ;; Calculate skid patches.
@@ -67,25 +67,30 @@
     [skid-patches ambi-skid-patches]))
 
 
-(defn new-fixie
+(defn new-bike
   "Create a new fixed-gear-bike data tree. The close-gears argument
   is true/false. Don't use it when creating sub-bikes or you'll get
   a huge tree which progresses by a ratio of 2% in each direction
-  each time around. I haven't tried it.  Chainring, sprocket, wheel
+  each time around. I haven't tried it.
+  Pass in a filled in any-bike map
+  from core, or give Chainring, sprocket, wheel
   diameter in millimeters and the crank-length (mm).  You'll get back a
   map chock full of goodies."
-  [ring sprocket wheel-dia crank-len close-gears]
-  (let [bike {:ring ring
-              :sprocket sprocket
-              :wheel-dia wheel-dia
-              :crank-len crank-len
-              :ratio (/ ring sprocket)}
-        skp (skid-patches ring sprocket)
-        gears (sprocket-gear-map ring sprocket wheel-dia crank-len)
-        bike (assoc bike
-                    :gears gears
-                    :skid-patches skp)]
-    (if close-gears
-      (assoc bike :close-gears
-             (close-gears (close-gear-pairs bike)))
-      bike)))
+  ([{:keys [ring sprocket wheel-dia crank-len close-gears]}]
+   (new-bike ring sprocket wheel-dia crank-len close-gears))
+
+  ([ring sprocket wheel-dia crank-len get-close-gears]
+   (let [bike {:ring ring
+               :sprocket sprocket
+               :wheel-dia wheel-dia
+               :crank-len crank-len
+               :ratio (/ ring sprocket)}
+         skp (skid-patches ring sprocket)
+         gears (sprocket-gear-map bike)
+         bike (assoc bike
+                     :gears gears
+                     :skid-patches skp)]
+     (if get-close-gears
+       (assoc bike :close-gears
+              (close-gears bike))
+       bike))))

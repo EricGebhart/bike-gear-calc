@@ -24,11 +24,17 @@
 
 (defn new-bike
   "Create a map of attributes for a bike with multiple
-  chainrings and sprockets to pass around."
-  [rings sprockets wheel-dia crank-len]
-  (let [bike
-        {:rings rings
-         :sprockets sprockets
-         :wheel-dia wheel-dia
-         :crank-len crank-len}]
-    (assoc bike :gears (gear-map bike))))
+  chainrings and sprockets to pass around. pass in
+  an any-bike map or a vector of rings, a vector of
+  sprockets the wheel diameter in millimeters and
+  the crank length in millimeters. "
+  ([{:keys [rings sprockets wheel-dia crank-len]}]
+   (new-bike rings sprockets wheel-dia crank-len))
+
+  ([rings sprockets wheel-dia crank-len]
+   (let [bike
+         {:rings rings
+          :sprockets sprockets
+          :wheel-dia wheel-dia
+          :crank-len crank-len}]
+     (assoc bike :gears (gear-map bike)))))

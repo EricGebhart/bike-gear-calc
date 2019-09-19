@@ -208,7 +208,7 @@
    {:ratios [3.054 2.384 2.106 1.858 1.644 1.450 1.281 1] :name "Sturmey Archer 8 speed w/roller brake (2004 2008) X RR8"}])
 
 
-(def clusters
+(def sprocket-clusters
 ;;; standard rear cluster configurations.
   [{:gears [] :name "Custom Sprocket(s)" :speeds nil :model ""}
    {:gears [11 12 13 14 16 18 21 24 28] :name "Harris" :speeds 9 :model "High & Wide"}
@@ -396,7 +396,7 @@
 
 
 
-(def crank-sizes
+(def crank-lengths
   [100
    105
    110

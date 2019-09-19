@@ -10,8 +10,9 @@ given cadence/RPMs.
 
 At this point tests are correct, but float comparisons are not always.
 
-_The API is still in a bit of flux, I'm not happy with it. I think it's
-going to need at least a map, maybe a defrecord._
+_The API is settling on maps at the moment.  Fill in an *any-bike* map
+then call *new-bike* in one of the three bike namespaces. Defrecords 
+might be a good choice for another refactor._
 
 The data namespace has maps for wheel size, crank lengths, standard
 cassette/freewheel configurations and the internal ratios for a number
@@ -27,6 +28,30 @@ The original idea was that this library provides everything needed to create
 a nice gear calculator SPA in clojurescript. But then, well, it's so simple,
 it would be nice if it worked in clojure, and then it would be nice to
 use clojure.spec, so here we are, on the way.
+
+## fixed gear skid patches
+
+I did not write this, it came from the bike forums somewhere I think.
+
+Simplify the gear ratio to the smallest equivalent whole number ratio.
+For single legged skidders, the number of skid patches is the denominator.
+For folks who can skid with either foot forward (ambidextrous skidders):
+if the numerator is even, the number of skid patches is still the denominator.
+if the numerator is odd, the number of skid patches is the denominator * 2.
+
+48x20 => 24x10 => 12x5 results in 5 skid patches for both single and ambidextrous skidders.
+43x18 results in 18 patches for single skidders but 36 for ambidextrous skidders.
+
+Notice that the number of skid patches doubles not when the chainring is
+odd, but when the simplified gear numerator is odd, thus ... 42x16 =>
+21x8 results in 8 patches for single skidders but 16 for ambidextrous
+skidders. What gear should I choose? Non-skidders should choose even
+toothed gears to maximize chain and sprocket life. Single-legged
+skidders should choose odd toothed chainrings to maximize skid
+patches. Ambidextrous skidders can choose even toothed gears where the
+chainring simplifies to an odd number to get both extended drivetrain
+wear and doubled skid patches.
+
 
 ## References
 
@@ -48,16 +73,61 @@ using this radius ratio instead of the wheel size.
 
 ## To do.
 
+* refactor the tests to match the last refactor...
 * Fix floating point comparisons in the tests
 * Add clojure specs for the data.  
 * Add directives so it will work in both clojure and clojurescript
 * An old fashioned, printable gear shifting chart ?
 * Perhaps a CLI ?
+* defrecords ?  maps and namespaces are working ok at the moment.
+* better wheel sizes.
 
 ## Usage
 
-Well, ok. I'll get to it.  In the mean time look at the tests.
+There are currently two good ways to use this. You can pass the appropriate
+parameters to *new-bike* in one of the 3 bike namespaces 
+_fixie, hub-gear, or deraileur-gear_. Or you can get an *(any-bike)* map from
+core and fill it in as you wish, then give that to one of the *new-bike* 
+functions.
 
+The *data* namespace has _wheel-sizes_, _internal-hubs_, _sprocket-clusters_,
+and _crank-lengths_ to aide with the choices. 
+
+ _bike-gear-calc.fixie/new-bike_
+A new fixie wants these. 
+ * ring       - The chainring size.
+ * sprocket   - The sprocket size
+ * wheel-dia  - The wheel diameter in mm. default 670 = 25x700c.
+ * crank-len  - The crank length in mm. default 170
+
+ _bike-gear-calc.hub-gear/new-bike_
+A new hub-gear wants all that plus. 
+ * internal-ratios - a vector of ratios
+
+_bike-gear-calc.deraileur-gear/new-bike_ 
+A deraileur-gear bike wants these. 
+ * rings       - A vector of chainrings
+ * sprockets   - A vector of sprockets
+ * wheel-dia   - The wheel diameter in mm.
+ * crank-len   - The crank length in mm.
+ 
+Your new bike will have a variety of data depending upon the bike.
+hub-gear and deraileur gear bikes get a list of gear-maps which have
+_:gear-inches_, _:meters-dev_, and _:gain-ratio_ along with the _:ratio_
+or _:sprocket_.  Additionally there is also _:speeds_ which is a list of
+speeds at rpm. Currently speeds are kmh due to a lack of plumbing.
+
+Deraileur bikes divide their gear vectors by ring size. For example, 
+there will be a vector of 3 maps of gears if you have 3 rings.
+ 
+Fixed gear bikes have all of that plus _:close-gears_ and _:skid-patches_. 
+Close gears is a list of bike maps with gears which are within 2% of the gear
+ratio of the current bike.
+
+Skid patches is a vector of two numbers. The first is single footed skid
+patches and the second is ambidextrous skid patches.
+ 
+ 
 ## License
 
 Copyright © 2019 Eric Gebhart
