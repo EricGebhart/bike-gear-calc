@@ -8,11 +8,24 @@ For fixed gear riders there is also the number of skid patches
 and gears within 2% of a gear. And finally, given a gear, the speed at a
 given cadence/RPMs.
 
+## Current state
+
+### Tests
+The tests have fallen out of date as of the last refactor. They need
+to be devided and reworked to match the new interface.
+
+The fixed-gear bike is working, but I've got to pack and move today,
+so the rest can wait until tomorrow.
+
 At this point tests are correct, but float comparisons are not always.
+
+### API
 
 _The API is settling on maps at the moment.  Fill in an *any-bike* map
 then call *new-bike* in one of the three bike namespaces. Defrecords 
 might be a good choice for another refactor._
+
+### Data etc.
 
 The data namespace has maps for wheel size, crank lengths, standard
 cassette/freewheel configurations and the internal ratios for a number
@@ -73,14 +86,15 @@ using this radius ratio instead of the wheel size.
 
 ## To do.
 
-* refactor the tests to match the last refactor...
-* Fix floating point comparisons in the tests
-* Add clojure specs for the data.  
-* Add directives so it will work in both clojure and clojurescript
-* An old fashioned, printable gear shifting chart ?
-* Perhaps a CLI ?
-* defrecords ?  maps and namespaces are working ok at the moment.
-* better wheel sizes.
+ * add mph to the any-bike, etc. For speeds at RPM.  People use mph still?
+ * refactor the tests to match the last refactor...
+ * Fix floating point comparisons in the tests
+ * Add clojure specs for the data.  
+ * Add directives so it will work in both clojure and clojurescript
+ * An old fashioned, printable gear shifting chart ?
+ * Perhaps a CLI ?
+ * defrecords ?  maps and namespaces are working ok at the moment.
+ * better wheel sizes.
 
 ## Usage
 
