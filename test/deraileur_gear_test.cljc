@@ -10,7 +10,7 @@
                          :sprockets [16 18 20 22]}))
 
 (deftest derailer-gear-map-test
-  (is (= (dg/gear-map bike1)
+  (is (= (dg/ring-gear-maps bike1)
          {:ring 42,
           :gears
           [{:sprocket 16,
@@ -29,7 +29,7 @@
             :gear-inches 51.545456,
             :meters-dev 4.1131444,
             :gain-ratio 3.8507488}]}))
-  (is (= (dg/gear-map bike1)
+  (is (= (dg/ring-gear-maps bike1)
          {:ring 42,
           :sprocket 13,
           :gears
@@ -44,7 +44,7 @@
             :gain-ratio 6.516651630401611}
            {:gear-inches 122.1230728149414,
             :meters-dev 9.744988727569579,
-            ;; :gain-ratio 9.123312282562255}
+            :gain-ratio 9.123312282562255}
            {:gear-inches 174.46153259277344,
             :meters-dev 13.921412467956543,
             :gain-ratio 13.033303260803223}]})))

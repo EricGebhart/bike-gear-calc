@@ -42,5 +42,5 @@
          :internal-ratios internal-ratios
          :mph mph}
         bike (assoc bike :gear
-                    (gc/sprocket-gear-map bike))]
+                    (gc/gear-map bike))]
     (assoc bike :gears (gear-map bike))))

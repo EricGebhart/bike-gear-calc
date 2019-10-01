@@ -87,7 +87,7 @@
                :crank-len crank-len
                :ratio (/ ring sprocket)}
          skp (skid-patches bike)
-         gears (gc/sprocket-gear-map bike)
+         gears (gc/gear-map bike)
          bike (assoc bike
                      :gears gears
                      :skid-patches skp)]

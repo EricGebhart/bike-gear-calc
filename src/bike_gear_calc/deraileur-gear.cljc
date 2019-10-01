@@ -1,7 +1,7 @@
 (ns bike-gear-calc.deraileur-gear
-  (:require [bike-gear-calc.core :refer :all] ))
+  (:require [bike-gear-calc.core :as gc] ))
 
-(defn ring-gear-map
+(defn gear-map
   "Given a chainring, and a deraileur bike map.
   calculate gain-ratio, gear-inches and meters of development
   for each sprocket in the freewheel/cassette."
@@ -11,15 +11,15 @@
     (into gm
           {:gears
            (into []
-                 (map #(sprocket-gear-map  %1 bike)
+                 (map #(gc/gear-map  %1 bike)
                       sprockets))})))
 
-(defn gear-map
+(defn ring-gear-maps
   "Given a deraileur-gear-bike map,
   give back the development for all of the sprockets."
   [{:keys [gear rings] :as bike}]
   (into []
-        (map #(ring-gear-map %1 bike)
+        (map #(gear-map %1 bike)
              rings)))
 
 (defn bike
@@ -38,4 +38,4 @@
           :sprockets sprockets
           :wheel-dia wheel-dia
           :crank-len crank-len}]
-     (assoc bike :gears (gear-map bike)))))
+     (assoc bike :gears (ring-gear-maps bike)))))

@@ -47,7 +47,7 @@
   (map (fn [rpm] [rpm  (rpm->speed rpm m-dev mph)])
        (range 50 150 10)))
 
-(defn sprocket-gear-map
+(defn gear-map
   "given a bike calculate the map of development. if given a sprocket
   and a bike, it's for a freewheel, so fool it, set the sprocket, then
   save the sprocket in the map on the way out."
