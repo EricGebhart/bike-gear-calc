@@ -43,11 +43,9 @@
 
 (defn calc-rpm-speeds
   "calculate the speeds for rpms from 50-140 for the given meters of development."
-  ([m-dev]
-   (calc-rpm-speeds m-dev false))
-  ([m-dev mph]
-   (map (fn [rpm] [rpm  (rpm->speed rpm m-dev mph)])
-        (range 50 150 10))))
+  [m-dev mph]
+  (map (fn [rpm] [rpm  (rpm->speed rpm m-dev mph)])
+       (range 50 150 10)))
 
 (defn sprocket-gear-map
   "given a bike calculate the map of development. if given a sprocket
@@ -55,7 +53,7 @@
   save the sprocket in the map on the way out."
   ([bike]
    (let [mdev (meters-of-development bike)
-         speeds (calc-rpm-speeds mdev)]
+         speeds (calc-rpm-speeds mdev (:mph bike))]
      {:gear-inches (gear-inches bike)
       :meters-dev  mdev
       :gain-ratio  (gain-ratio bike)
@@ -68,13 +66,28 @@
 (defn any-bike
   "Create a map of attributes for a bike with
   all attributes needed for any bike."
-  []
-  {:ring nil
-   :sprocket nil
-   :rings []
-   :sprockets []
-   :wheel-dia 670
-   :crank-len 170
+  [{:keys [ring sprocket
+           crank-len wheel-dia
+           rings sprockets
+           internal-ratios
+           get-close-gears
+           mph]
+    :or {ring 42
+         sprocket 18
+         crank-len 170
+         wheel-dia 670
+         rings []
+         sprockets []
+         internal-ratios []
+         get-close-gears false
+         mph false}}]
+  {:ring ring
+   :sprocket sprocket
+   :rings rings
+   :sprockets sprockets
+   :wheel-dia wheel-dia
+   :crank-len crank-len
    :ratio 1
-   :internal-ratios []
-   :get-close-gears true})
+   :internal-ratios internal-ratios
+   :get-close-gears get-close-gears
+   :mph mph})
