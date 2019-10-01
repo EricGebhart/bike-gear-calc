@@ -11,19 +11,15 @@ given cadence/RPMs.
 ## Current state
 
 ### Tests
-The tests have fallen out of date as of the last refactor. They need
-to be devided and reworked to match the new interface.
-
-The fixed-gear bike is working, but I've got to pack and move today,
-so the rest can wait until tomorrow.
 
 At this point tests are correct, but float comparisons are not always.
 
 ### API
 
-_The API is settling on maps at the moment.  Fill in an *any-bike* map
-then call *new-bike* in one of the three bike namespaces. Defrecords 
-might be a good choice for another refactor._
+The API is settling on maps at the moment.  Fill in an *core/any-bike* map
+then call *bike* in one of the three bike namespaces. 
+_(fixie, hub-gear or deraileur-gear)._
+Defrecords might be a good choice for another refactor.
 
 ### Data etc.
 
@@ -99,26 +95,28 @@ using this radius ratio instead of the wheel size.
 ## Usage
 
 There are currently two good ways to use this. You can pass the appropriate
-parameters to *new-bike* in one of the 3 bike namespaces 
+parameters to *bike* in one of the 3 bike namespaces 
 _fixie, hub-gear, or deraileur-gear_. Or you can get an *(any-bike)* map from
-core and fill it in as you wish, then give that to one of the *new-bike* 
-functions.
+core and fill it in as you wish, then give that to one of the *bike* 
+functions. This is makes it easy to have a bike definition that could be
+a hub-bike, a fixed gear or a deraileur gear bike and create one of the three
+from it. 
 
 The *data* namespace has _wheel-sizes_, _internal-hubs_, _sprocket-clusters_,
 and _crank-lengths_ to aide with the choices. 
 
- _bike-gear-calc.fixie/new-bike_
+ _bike-gear-calc.fixie/bike_
 A new fixie wants these. 
  * ring       - The chainring size.
  * sprocket   - The sprocket size
  * wheel-dia  - The wheel diameter in mm. default 670 = 25x700c.
  * crank-len  - The crank length in mm. default 170
 
- _bike-gear-calc.hub-gear/new-bike_
+ _bike-gear-calc.hub-gear/bike_
 A new hub-gear wants all that plus. 
  * internal-ratios - a vector of ratios
 
-_bike-gear-calc.deraileur-gear/new-bike_ 
+_bike-gear-calc.deraileur-gear/bike_ 
 A deraileur-gear bike wants these. 
  * rings       - A vector of chainrings
  * sprockets   - A vector of sprockets
