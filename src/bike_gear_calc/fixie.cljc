@@ -67,31 +67,3 @@
                              (* 2 skid-patches)
                              skid-patches)]
      [skid-patches ambi-skid-patches])))
-
-
-(defn bike
-  "Create a new fixed-gear-bike data tree. Supply a filled
-  out core/any-bike if you like. The get-close-gears argument is
-  true/false. Don't use it when creating sub-bikes or you'll get a huge
-  tree which progresses by a ratio of 2% in each direction each time
-  around. I haven't tried it. Pass in a filled in any-bike map from core,
-  or give Chainring, sprocket, wheel diameter in millimeters and the
-  crank-length (mm).  You'll get back a map chock full of goodies."
-  ([{:keys [ring sprocket wheel-dia crank-len get-close-gears]}]
-   (bike ring sprocket wheel-dia crank-len get-close-gears))
-
-  ([ring sprocket wheel-dia crank-len get-close-gears]
-   (let [bike {:ring ring
-               :sprocket sprocket
-               :wheel-dia wheel-dia
-               :crank-len crank-len
-               :ratio (/ ring sprocket)}
-         skp (skid-patches bike)
-         gears (gc/gear-map bike)
-         bike (assoc bike
-                     :gears gears
-                     :skid-patches skp)]
-     (if get-close-gears
-       (assoc bike :close-gears
-              (close-gears bike))
-       bike))))

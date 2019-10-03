@@ -246,25 +246,25 @@
 
 
 (deftest bike-test-wo-close-gears
-  (is (= (f/bike bike1) {:ring 42,
-                         :sprocket 18,
-                         :wheel-dia 685.8,
-                         :crank-len 170,
-                         :ratio 7/3,
-                         :gears
-                         {:gear-inches 63.0,
-                          :meters-dev 5.0271764,
-                          :gain-ratio 4.7064705,
-                          :speeds
-                          ([50 15.08153]
-                           [60 18.097836]
-                           [70 21.114141]
-                           [80 24.130447]
-                           [90 27.146753]
-                           [100 30.16306]
-                           [110 33.179363]
-                           [120 36.19567]
-                           [130 39.211975]
-                           [140 42.228283])},
-                         :skid-patches [3 6]}))
-  )
+  (is (= (gc/bike (gc/coerce-bike :fixie bike1))
+         {:ring 42,
+          :sprocket 18,
+          :wheel-dia 685.8,
+          :crank-len 170,
+          :ratio 7/3,
+          :gears
+          {:gear-inches 63.0,
+           :meters-dev 5.0271764,
+           :gain-ratio 4.7064705,
+           :speeds
+           ([50 15.08153]
+            [60 18.097836]
+            [70 21.114141]
+            [80 24.130447]
+            [90 27.146753]
+            [100 30.16306]
+            [110 33.179363]
+            [120 36.19567]
+            [130 39.211975]
+            [140 42.228283])},
+          :skid-patches [3 6]})))
