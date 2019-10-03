@@ -1,7 +1,6 @@
 (ns bike-gear-calc.core
   (:require [clojure.spec.alpha :as s]
             [bike-gear-calc.data :as d]
-            [bike-gear-calc.fixie :as f]
             [clojure.math.numeric-tower :as math] ))
 
 
@@ -184,6 +183,70 @@
         (* (/ ring sprocket))
         float)))
 
+(defn ratio-filter
+  "give a ring chainring size, a sprocket sprocket size and a
+  range tolerence return true or false if the gears fall
+  within tolerance."
+  [ring sprocket gratio ratio-range]
+  (< (math/abs (- gratio (/ ring sprocket)))
+     ratio-range))
+
+(defn create-gear-combinations
+  "Create a list of chainring and sprocket pairs for
+  chainrings between 28 and 61 and sprockets between 9 and 25."
+  []
+  (mapcat identity
+          (map (fn [ring]
+                 (map (fn [s] [ring s]) (range 9 25)))
+               (range 28 61))))
+
+(defn close-gear-pairs
+  "Given a fixed-gear-bike map return a list of fixed-gear-bike maps
+  which have a ratio within 2%."
+  [ratio]
+  (let [gear-combos (create-gear-combinations)
+        ratio-range (* ratio 0.02)]
+    (filter #(ratio-filter (first %) (second %)  ratio ratio-range)
+            gear-combos)))
+
+(declare bike)
+
+(defn close-gears
+  "given a fixed-gear-bike map return a vector of gear maps
+   of gears within 2% of the original ratio. "
+  [{:keys [ratio ring sprocket wheel-dia crank-len]}]
+  (->> (close-gear-pairs ratio)
+       (map #(bike (first %) (second %) wheel-dia crank-len false))
+       (into [])))
+
+;; Calculate skid patches.
+
+;; don't need this if I'm using math tower. waiting for the
+;; outcome with cljs directives.
+(defn gcd
+  "greatest common denominator"
+  [a b]
+  (if (= b 0)
+    a
+    (recur b (mod a b))))
+
+(defn skid-patches
+  "calculate the skid patches using the gcd for the ratio.
+  return a vector, the first value is skid patches and the second
+  is ambidextrous skid patches."
+  ([{:keys [ring sprocket]}]
+   (skid-patches ring sprocket))
+  ([ring sprocket]
+   (let [cd (math/gcd ring sprocket)
+         skid-patches (/ sprocket cd)
+         ambi-is-extra  (-> (/ ring cd)
+                            (mod 2)
+                            (> 0))
+         ambi-skid-patches (if  ambi-is-extra
+                             (* 2 skid-patches)
+                             skid-patches)]
+     [skid-patches ambi-skid-patches])))
+
 ;; rpm/cadence to speed for a gear.
 (defn rpm->speed
   "calculate the speed for a given rpm and meters of development."
@@ -268,7 +331,7 @@
   give back the development for all of the sprockets."
   (into []
         ;; (map #(ring-gears %1 bike)
-        rings)))
+        rings))
 
 ;; kind of stupid... one more layer of indirection.
 (defmethod calc-gears :fixie [bike]
@@ -285,14 +348,14 @@
   [{:keys [get-close-gears] :as bike}]
   "Fill in a fixie bike. Give it a validated basic fixie bike.
   You'll get back a map chock full of goodies."
-  (let [skp (f/skid-patches bike)
+  (let [skp (skid-patches bike)
         gears (single-gear bike)
         bike (assoc bike
                     :gears gears
                     :skid-patches skp)]
     (if get-close-gears
       (assoc bike :close-gears
-             (f/close-gears bike))
+             (close-gears bike))
       bike)))
 
 (defmethod bike :internal [bike]

@@ -21,6 +21,16 @@ then call *bike* in one of the three bike namespaces.
 _(fixie, hub-gear or deraileur-gear)._
 Defrecords might be a good choice for another refactor.
 
+There are specs for the input bike maps. The way to use this is
+to create an any-bike and fill it in how you like. Then coerce it
+to a :fixie :internal or :deraileur bike.
+
+Then hand it off to get the data.
+
+`(calc-gears (coerce-bike :fixie <your-any-bike>)`
+
+Will give you everything it can for a fixie.
+
 ### Data etc.
 
 The data namespace has maps for wheel size, crank lengths, standard
@@ -82,10 +92,8 @@ using this radius ratio instead of the wheel size.
 
 ## To do.
 
- * add mph to the any-bike, etc. For speeds at RPM.  People use mph still?
- * refactor the tests to match the last refactor...
  * Fix floating point comparisons in the tests
- * Add clojure specs for the data.  
+ * Add clojure specs for the data.  -- part way done.
  * Add directives so it will work in both clojure and clojurescript
  * An old fashioned, printable gear shifting chart ?
  * Perhaps a CLI ?
