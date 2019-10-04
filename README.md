@@ -10,6 +10,8 @@ given cadence/RPMs.
 
 ## Current state
 
+Compiles for both clojure and clojurescript. 
+
 ### Tests
 
 At this point tests are correct, but float comparisons are not always.
@@ -19,7 +21,6 @@ At this point tests are correct, but float comparisons are not always.
 The API is settling on maps at the moment.  Fill in an *core/any-bike* map
 then call *bike* in one of the three bike namespaces. 
 _(fixie, hub-gear or deraileur-gear)._
-Defrecords might be a good choice for another refactor.
 
 There are specs for the input bike maps. The way to use this is
 to create an any-bike and fill it in how you like. Then coerce it
@@ -92,9 +93,9 @@ using this radius ratio instead of the wheel size.
 
 ## To do.
 
+ * Deploy to clojars
  * Fix floating point comparisons in the tests
  * Add clojure specs for the data.  -- part way done.
- * Add directives so it will work in both clojure and clojurescript
  * An old fashioned, printable gear shifting chart ?
  * Perhaps a CLI ?
  * defrecords ?  maps and namespaces are working ok at the moment.
@@ -112,6 +113,8 @@ from it.
 
 The *data* namespace has _wheel-sizes_, _internal-hubs_, _sprocket-clusters_,
 and _crank-lengths_ to aide with the choices. 
+
+*With spec, you should be able to get these with `(doc ::bike-gear-calc/fixie)`.*
 
  _bike-gear-calc.fixie/bike_
 A new fixie wants these. 

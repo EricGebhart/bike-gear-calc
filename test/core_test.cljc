@@ -2,8 +2,8 @@
   (:require [bike-gear-calc.core :as gc]
             [clojure.spec.alpha :as s]
             [bike-gear-calc.data :as d]
-            [clojure.test :refer [deftest is testing run-tests]]
-            #_[cljs.test :refer-macros [deftest is testing run-tests]]))
+            #?(:clj [clojure.test :refer [deftest is testing run-tests]]
+               :cljs [cljs.test :refer-macros [deftest is testing run-tests]])))
 
 (def wheel-dia 685.8)
 (def bike1 (gc/any-bike {:wheel-diameter wheel-dia}))
@@ -158,7 +158,7 @@
                     [130 29.790916]
                     [140 32.082527])})))
 
-;;; both of these next tests are correct. I have not figured out
+;;; both of these next two tests are correct. I have not figured out
 ;;; why deftest croaks.
 (deftest derailer-gear-map-test
   (is (= (gc/ring-gears 42 bike1d)

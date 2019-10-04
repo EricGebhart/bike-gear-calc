@@ -1,16 +1,38 @@
 (ns bike-gear-calc.core
   (:require [clojure.spec.alpha :as s]
-            [bike-gear-calc.data :as d]
-            [clojure.math.numeric-tower :as math] ))
+            [bike-gear-calc.data :as d]))
+
+;; Math functions so we don't need any libraries.
+
+(def PI 3.141592653589793)
+
+;; add spec instrumentation to these..
+(defn abs
+  "(abs n) is the absolute value of n"
+  [n]
+  (cond
+    (neg? n) (- n)
+    :else n))
+
+;; gcd only accepts integers.
+(defn gcd
+  "(gcd a b) returns the greatest common divisor of a and b"
+  [a b]
+  (loop [a (abs a) b (abs b)]
+    (if (zero? b)
+      a
+      (recur b (mod a b)))))
 
 
+;; Specs for our bike data structures.
 
 (s/def ::type #{:any :fixie :internal :deraileur})
 (s/def ::ring int?)
 (s/def ::sprocket int?)
 (s/def ::wheel-diameter (s/or :fdia float? :dia int?))
 (s/def ::crank-length (into #{} d/crank-lengths))
-(s/def ::ratio (s/or :n float? :r ratio?))
+#? (:clj (s/def ::ratio (s/or :n float? :r ratio?))
+    :cljs (s/def ::ratio float?))
 (s/def ::get-close-gears boolean?)
 (s/def ::mph boolean?)
 (s/def ::internal-ratios (s/coll-of float? :kind vector? :min-count 2 :max-count 14 :distinct true))
@@ -26,13 +48,16 @@
 (def internal-keys [:internal-ratios])
 (def deraileur-keys [:rings :sprockets])
 
-;; I don't like this. But I haven't yet figured out how to get
+;; I don't like this. It duplicates the map definitons.
+;; But I haven't yet figured out how to get
 ;; a list of keys from a spec. form or describe, with a walk
 ;; through the spec tree.  That should be a part of spec. give
 ;; me a list of required and optional keys for this map here,
 ;; with the merges merged. duh. unqualified if necessary. :-(
 ;; I'll come back to this maybe.  It would be nice to use spec
-;; to coerce the shape of something.
+;; to get the keys in order to coerce the shape of something.
+;; I don't want spec to coerce for me. I just don't want to
+;; define the same thing twice.
 
 (def fixie (-> fixie-keys
                (into ring&sprocket-keys)
@@ -76,6 +101,14 @@
                                                     ::internal-ratios
                                                     ::rings
                                                     ::sprockets])))
+
+(s/def ::single-foot-skid-patch int?)
+(s/def ::ambidexterous-skid-patch int?)
+(s/def ::skid-patches (s/coll-of (s/and ::single-foot-skid-patch
+                                        ::ambidextrous-skid-patch)
+                                 :kind vector?
+                                 :count 2))
+
 
 ;; still to do:  specs for all the returns.  Maybe add {:pre to functions}
 ;; or do a spec definition for some of the functions. it's not really
@@ -170,7 +203,7 @@
   wheel wheel-diameter in meters. Give the meters of development. "
   [{:keys [ring sprocket wheel-diameter]}]
   (->  (/ ring sprocket)
-       (* (* wheel-diameter Math/PI))
+       (* (* wheel-diameter PI))
        (/ 1000)
        float))
 
@@ -188,7 +221,7 @@
   range tolerence return true or false if the gears fall
   within tolerance."
   [ring sprocket gratio ratio-range]
-  (< (math/abs (- gratio (/ ring sprocket)))
+  (< (abs (- gratio (/ ring sprocket)))
      ratio-range))
 
 (defn create-gear-combinations
@@ -221,14 +254,7 @@
 
 ;; Calculate skid patches.
 
-;; don't need this if I'm using math tower. waiting for the
-;; outcome with cljs directives.
-(defn gcd
-  "greatest common denominator"
-  [a b]
-  (if (= b 0)
-    a
-    (recur b (mod a b))))
+
 
 (defn skid-patches
   "calculate the skid patches using the gcd for the ratio.
@@ -237,7 +263,7 @@
   ([{:keys [ring sprocket]}]
    (skid-patches ring sprocket))
   ([ring sprocket]
-   (let [cd (math/gcd ring sprocket)
+   (let [cd (gcd ring sprocket)
          skid-patches (/ sprocket cd)
          ambi-is-extra  (-> (/ ring cd)
                             (mod 2)
