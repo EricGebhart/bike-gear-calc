@@ -12,25 +12,37 @@ given cadence/RPMs.
 
 Compiles for both clojure and clojurescript. 
 
+not yet on clojars.  `lein pom; lein build; lein install`
+
+*dependencies*
+`[eag/bike-gear-calc "0.1.0"]`
+
 ### Tests
 
 At this point tests are correct, but float comparisons are not always.
 
 ### API
 
-The API is settling on maps at the moment.  Fill in an *core/any-bike* map
-then call *bike* in one of the three bike namespaces. 
-_(fixie, hub-gear or deraileur-gear)._
+`(:require [bike-gear-calc/core :as bgc])`
 
-There are specs for the input bike maps. The way to use this is
-to create an any-bike and fill it in how you like. Then coerce it
-to a :fixie :internal or :deraileur bike.
+The API is settling on maps at the moment.  Fill in an *bgc/any-bike* map
+then call *bike*. 
 
-Then hand it off to get the data.
+There are specs for the input bike maps. They will be coerced to their types 
+and validated. The any-bike is a superset of the three types of bike.
 
-`(calc-gears (coerce-bike :fixie <your-any-bike>)`
+The way to use this is to create an any-bike and fill it in how you like. 
+set the the *:type* to a _:fixie_, _:internal_, or _:deraileur_ bike
+then call `bike`. `(bgc/bike <your-any-bike>)`  The default for _:any_ is
+to treat it as a fixie.
 
-Will give you everything it can for a fixie.
+```clojure
+ (let [anybike (bgc/any-bike)
+       myfixie (assoc anybike :type :fixie)]
+       (bgc/bike myfixie)
+```
+
+This will give you everything it can for the bike you give it.
 
 ### Data etc.
 
@@ -53,24 +65,24 @@ use clojure.spec, so here we are, on the way.
 
 I did not write this, it came from the bike forums somewhere I think.
 
-Simplify the gear ratio to the smallest equivalent whole number ratio.
-For single legged skidders, the number of skid patches is the denominator.
-For folks who can skid with either foot forward (ambidextrous skidders):
-if the numerator is even, the number of skid patches is still the denominator.
-if the numerator is odd, the number of skid patches is the denominator * 2.
+> Simplify the gear ratio to the smallest equivalent whole number ratio.
+  For single legged skidders, the number of skid patches is the denominator.
+  For folks who can skid with either foot forward (ambidextrous skidders):
+  if the numerator is even, the number of skid patches is still the denominator.
+  if the numerator is odd, the number of skid patches is the denominator * 2.
 
-48x20 => 24x10 => 12x5 results in 5 skid patches for both single and ambidextrous skidders.
-43x18 results in 18 patches for single skidders but 36 for ambidextrous skidders.
+>> 48x20 => 24x10 => 12x5 results in 5 skid patches for both single and ambidextrous skidders.
+>> 43x18 results in 18 patches for single skidders but 36 for ambidextrous skidders.
 
-Notice that the number of skid patches doubles not when the chainring is
-odd, but when the simplified gear numerator is odd, thus ... 42x16 =>
-21x8 results in 8 patches for single skidders but 16 for ambidextrous
-skidders. What gear should I choose? Non-skidders should choose even
-toothed gears to maximize chain and sprocket life. Single-legged
-skidders should choose odd toothed chainrings to maximize skid
-patches. Ambidextrous skidders can choose even toothed gears where the
-chainring simplifies to an odd number to get both extended drivetrain
-wear and doubled skid patches.
+> Notice that the number of skid patches doubles not when the chainring is
+  odd, but when the simplified gear numerator is odd, thus ... 42x16 =>
+  21x8 results in 8 patches for single skidders but 16 for ambidextrous
+  skidders. What gear should I choose? Non-skidders should choose even
+  toothed gears to maximize chain and sprocket life. Single-legged
+  skidders should choose odd toothed chainrings to maximize skid
+  patches. Ambidextrous skidders can choose even toothed gears where the
+  chainring simplifies to an odd number to get both extended drivetrain
+  wear and doubled skid patches.
 
 
 ## References
@@ -95,6 +107,7 @@ using this radius ratio instead of the wheel size.
 
  * Deploy to clojars
  * Fix floating point comparisons in the tests
+ * circleci / jenkins ?
  * Add clojure specs for the data.  -- part way done.
  * An old fashioned, printable gear shifting chart ?
  * Perhaps a CLI ?

@@ -8,9 +8,16 @@
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-localrepo "0.4.0"]]
   :source-paths ["cljc" "src"]
+
   :cljsbuild {:builds [{:source-paths ["cljc" "src"]
                         :compiler { ;; :output-to "bike-gear-calc/js/main.js"
                                    :optimizations :whitespace
                                    :pretty-print true}}]}
   :hooks [leiningen.cljsbuild]
-  :repl-options {:init-ns bike-gear-calc.core})
+  :repl-options {:init-ns bike-gear-calc.core}
+
+  :deploy-repositories [["releases" :clojars]
+                        ["snapshots" :clojars]])
+
+;;; install locally in m2.
+;;; lein pom; lein jar; lein install

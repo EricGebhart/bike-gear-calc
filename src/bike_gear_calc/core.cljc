@@ -115,10 +115,11 @@
 ;; necessary, but nice in a small example.
 
 ;; Ok. So usage is just get an any-bike, fill it in as you wish
-;; then coerce it to the bike type you want, :fixie, :internal, or
-;; :deraileur.  Then send it to bike to get your data.
+;; Set the type to :fixie, :internal or :deraleur
+;; Then send it to bike to get your data. It will be coerced, validated
+;; and the data will be filled in.
 ;;
-;; (bike (coerce-bike :fixie <your-any-bike>))
+;; (bike <your-any-bike-with-type>))
 
 (defn any-bike
   "Create a map of attributes for a bike with all attributes needed for
@@ -163,9 +164,9 @@
 ;; spec-tools is a start.  go look there later.
 
 ;; :fixie, :internal or :deraileur with an anybike.
-(defmulti coerce-bike (fn [type bike] type) )
+(defmulti coerce-bike (fn [bike] :type) )
 
-(defmethod coerce-bike :fixie [_ {:keys [ring sprocket] :as bike}]
+(defmethod coerce-bike :fixie [{:keys [ring sprocket] :as bike}]
   "coerce an any-bike into a fixie "
   (s/conform ::fixie
              (assoc (select-keys bike fixie)
@@ -173,18 +174,22 @@
                     :get-close-gears true
                     :ratio (/ ring sprocket))))
 
-(defmethod coerce-bike :internal [_ {:keys [ring sprocket] :as bike}]
+(defmethod coerce-bike :internal [{:keys [ring sprocket] :as bike}]
   "coerce an any-bike into a internal gear bike."
   (s/conform ::internal
              (assoc (select-keys bike internal)
                     :type :internal
                     :ratio (/ ring sprocket))))
 
-(defmethod coerce-bike :deraileur [_ bike]
+(defmethod coerce-bike :deraileur [bike]
   "coerce an any-bike into a deraileur gear bike."
   (s/conform ::deraileur
              (assoc (select-keys bike deraileur)
                     :type :deraileur)))
+
+(defmethod coerce-bike :any [{:keys [ring sprocket] :as bike}]
+  "coerce an un-typed any-bike into a fixie "
+  (coerce-bike (assoc bike :type :fixie)))
 
 
 ;;; calculations...
@@ -367,14 +372,15 @@
 
 
 ;; fill in all the data about the gears for a bike.
-
+;; give it an any-bike or coerced-bike with the right type...
 (defmulti bike (fn [bike] (:type bike)))
 
 (defmethod bike :fixie
   [{:keys [get-close-gears] :as bike}]
-  "Fill in a fixie bike. Give it a validated basic fixie bike.
+  "Fill in a fixie bike.
   You'll get back a map chock full of goodies."
-  (let [skp (skid-patches bike)
+  (let [bike (coerce-bike bike)
+        skp (skid-patches bike)
         gears (single-gear bike)
         bike (assoc bike
                     :gears gears
@@ -385,13 +391,19 @@
       bike)))
 
 (defmethod bike :internal [bike]
-  "Pass in a coerced internal gear bike map.
+  "Pass in an internal gear bike map.
   Get back all the goodies for an internally geared bike."
-  (let [bike (assoc bike :gear
+  (let [bike (coerce-bike bike)
+        bike (assoc bike :gear
                     (single-gear bike))]
     (assoc bike :gears (calc-gears bike))))
 
 (defmethod bike :deraileur [bike]
-  "Pass in a coerced deraileur gear bike map.
+  "Pass in a deraileur gear bike map.
   get back all the goodies "
-  (assoc bike :gears (calc-gears bike)))
+  (let [bike (coerce-bike bike)]
+    (assoc bike :gears (calc-gears bike))))
+
+(defmethod bike :any [bike]
+  "An untyped any-bike, make it a fixie."
+  (bike (assoc bike :type :fixie)))
