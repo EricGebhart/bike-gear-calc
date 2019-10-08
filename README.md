@@ -33,13 +33,13 @@ and validated. The any-bike is a superset of the three types of bike.
 
 The way to use this is to create an any-bike and fill it in how you like. 
 set the the *:type* to a _:fixie_, _:internal_, or _:deraileur_ bike
-then call `bike`. `(bgc/bike <your-any-bike>)`  The default for _:any_ is
-to treat it as a fixie.
+then call `bike`. `(bgc/bike <your-any-bike>)`  The default for a *:type* 
+of _:any_ is to treat it as a fixie.
 
 ```clojure
  (let [anybike (bgc/any-bike)
        myfixie (assoc anybike :type :fixie)]
-       (bgc/bike myfixie)
+      (bgc/bike myfixie))
 ```
 
 This will give you everything it can for the bike you give it.
@@ -97,16 +97,17 @@ in case anyone likes them.
 
 In sheldon's words.  Gain ratio is calculated like this.
 
-Divide the wheel radius in mm, by the crank length in mm. this will
-yield a single radius ratio applicable to all of the gears of a given
-bike. The individual gear ratios are calculated as with gear inches,
-using this radius ratio instead of the wheel size.
+> Divide the wheel radius in mm, by the crank length in mm. this will
+  yield a single radius ratio applicable to all of the gears of a given
+  bike. The individual gear ratios are calculated as with gear inches,
+  using this radius ratio instead of the wheel size.
 
 
 ## To do.
 
  * Deploy to clojars
  * Fix floating point comparisons in the tests
+ * Accomodate schlumpf and other geared bottom brackets.
  * circleci / jenkins ?
  * Add clojure specs for the data.  -- part way done.
  * An old fashioned, printable gear shifting chart ?
@@ -151,17 +152,18 @@ Your new bike will have a variety of data depending upon the bike.
 hub-gear and deraileur gear bikes get a list of gear-maps which have
 _:gear-inches_, _:meters-dev_, and _:gain-ratio_ along with the _:ratio_
 or _:sprocket_.  Additionally there is also _:speeds_ which is a list of
-speeds at rpm. Currently speeds are kmh due to a lack of plumbing.
+speeds at rpm. The default is _km/h_ set `:mph true` to get _mph_ 
 
-Deraileur bikes divide their gear vectors by ring size. For example, 
-there will be a vector of 3 maps of gears if you have 3 rings.
+Deraileur bikes divide their vectors of gear maps by ring size. For example, 
+if you have 3 rings, there will be a vector of 3 maps each with a vector of gears 
  
 Fixed gear bikes have all of that plus _:close-gears_ and _:skid-patches_. 
 Close gears is a list of bike maps with gears which are within 2% of the gear
-ratio of the current bike.
+ratio of the current bike. These will be filled in just like the parent
+fixed gear bike but without _:close-gears_
 
-Skid patches is a vector of two numbers. The first is single footed skid
-patches and the second is ambidextrous skid patches.
+Skid patches is a vector of two numbers. The first is the number of single 
+footed skid patches and the second is the number of ambidextrous skid patches.
  
  
 ## License
