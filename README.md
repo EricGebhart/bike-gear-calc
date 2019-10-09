@@ -8,11 +8,17 @@ For fixed gear riders there is also the number of skid patches
 and gears within 2% of a gear. And finally, given a gear, the speed at a
 given cadence/RPMs.
 
+The original idea was that this library provides everything needed to create 
+a nice gear calculator SPA in clojurescript. But then, well, it's so simple,
+it would be nice if it worked in clojure, and then it would be nice to
+use clojure.spec, so here we are, on the way.
+
 ## Current state
 
-Compiles for both clojure and clojurescript. 
+Compiles for both clojure and clojurescript. Spec is used for 
+the input structures.  
 
-not yet on clojars.  `lein pom; lein build; lein install`
+not yet on clojars.  `lein pom; lein compile; lein install`
 
 *dependencies*
 `[eag/bike-gear-calc "0.1.0"]`
@@ -23,18 +29,22 @@ At this point tests are correct, but float comparisons are not always.
 
 ### API
 
-`(:require [bike-gear-calc/core :as bgc])`
 
 The API is settling on maps at the moment.  Fill in an *bgc/any-bike* map
-then call *bike*. 
+then call *bike* with it. 
 
 There are specs for the input bike maps. They will be coerced to their types 
 and validated. The any-bike is a superset of the three types of bike.
 
 The way to use this is to create an any-bike and fill it in how you like. 
-set the the *:type* to a _:fixie_, _:internal_, or _:deraileur_ bike
+There are minimal defaults. So you could just send it straight to the
+bike function.
+
+Set the the *:type* to _:fixie_, _:internal_, or _:deraileur_ bike
 then call `bike`. `(bgc/bike <your-any-bike>)`  The default for a *:type* 
 of _:any_ is to treat it as a fixie.
+
+`(:require [bike-gear-calc.core :as bgc])`
 
 ```clojure
  (let [anybike (bgc/any-bike)
@@ -51,15 +61,11 @@ cassette/freewheel configurations and the internal ratios for a number
 of internally geared hubs
 
 Wheel sizes used in the calculations are the diameter in millimeters. 
-They are where any errors can be introduced, it might be best to
+This is where errors can be introduced, it might be best to
 just measure yours instead of using the wheel sizes from data. 
 But then again an error of few millimeters isn't going to change things 
 that much.
 
-The original idea was that this library provides everything needed to create 
-a nice gear calculator SPA in clojurescript. But then, well, it's so simple,
-it would be nice if it worked in clojure, and then it would be nice to
-use clojure.spec, so here we are, on the way.
 
 ## fixed gear skid patches
 
@@ -107,6 +113,7 @@ In sheldon's words.  Gain ratio is calculated like this.
 
  * Deploy to clojars
  * Fix floating point comparisons in the tests
+ * Store internal hub, deraileur cluster and wheel names as data for the bike.
  * Accomodate schlumpf and other geared bottom brackets.
  * circleci / jenkins ?
  * Add clojure specs for the data.  -- part way done.
