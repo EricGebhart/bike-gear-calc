@@ -129,33 +129,35 @@
   place to put stuff, but can then be turned into any of the specific
   bike types.
   Give it a map if you really want other values from the start."
-  [{:keys [ring sprocket
-           crank-length
-           wheel-diameter
-           rings sprockets
-           internal-ratios
-           get-close-gears
-           mph]
-    :or {ring 42                       ;some reasonable, mostly, defaults that validate.
-         sprocket 18
-         crank-length 170
-         wheel-diameter 670.0
-         rings [52 42]
-         sprockets [18]
-         internal-ratios [0.5 1.0]
-         get-close-gears false
-         mph false}}]
-  {:type :any
-   :ring ring
-   :sprocket sprocket
-   :rings rings
-   :sprockets sprockets
-   :wheel-diameter wheel-diameter
-   :crank-length crank-length
-   :ratio 1
-   :internal-ratios internal-ratios
-   :get-close-gears get-close-gears
-   :mph mph})
+  ([]
+   (any-bike [{}]))
+  ([{:keys [ring sprocket
+            crank-length
+            wheel-diameter
+            rings sprockets
+            internal-ratios
+            get-close-gears
+            mph]
+     :or {ring 42                       ;some reasonable, mostly, defaults that validate.
+          sprocket 18
+          crank-length 170
+          wheel-diameter 670.0
+          rings [52 42]
+          sprockets [18]
+          internal-ratios [0.5 1.0]
+          get-close-gears false
+          mph false}}]
+   {:type :any
+    :ring ring
+    :sprocket sprocket
+    :rings rings
+    :sprockets sprockets
+    :wheel-diameter wheel-diameter
+    :crank-length crank-length
+    :ratio 1
+    :internal-ratios internal-ratios
+    :get-close-gears get-close-gears
+    :mph mph}))
 
 ;; change the shape of an any-bike to a specific bike.
 ;; really it should be even better, instead of getting the keys
