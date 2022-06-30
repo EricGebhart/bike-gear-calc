@@ -115,7 +115,7 @@
 ;; necessary, but nice in a small example.
 
 ;; Ok. So usage is just get an any-bike, fill it in as you wish
-;; Set the type to :fixie, :internal or :deraleur
+;; Set the type to :fixie, :internal or :deraileur
 ;; Then send it to bike to get your data. It will be coerced, validated
 ;; and the data will be filled in.
 ;;
@@ -166,7 +166,10 @@
 ;; spec-tools is a start.  go look there later.
 
 ;; :fixie, :internal or :deraileur with an anybike.
-(defmulti coerce-bike (fn [bike] :type) )
+
+;; not really a good fit for a multimethod...
+
+(defmulti coerce-bike (fn [bike] (:type bike)) )
 
 (defmethod coerce-bike :fixie [{:keys [ring sprocket] :as bike}]
   "coerce an any-bike into a fixie "
@@ -193,6 +196,29 @@
   "coerce an un-typed any-bike into a fixie "
   (coerce-bike (assoc bike :type :fixie)))
 
+
+;; better than a multi-method
+
+(defn bike->fixie [{:keys [ring sprocket] :as bike}]
+  "coerce an any-bike into a fixie "
+  (s/conform ::fixie
+             (assoc (select-keys bike fixie)
+                    :type :fixie
+                    :get-close-gears true
+                    :ratio (/ ring sprocket))))
+
+(defn bike->internal [{:keys [ring sprocket] :as bike}]
+  "coerce an any-bike into a internal gear bike."
+  (s/conform ::internal
+             (assoc (select-keys bike internal)
+                    :type :internal
+                    :ratio (/ ring sprocket))))
+
+(defn bike->deraileur [bike]
+  "coerce an any-bike into a deraileur gear bike."
+  (s/conform ::deraileur
+             (assoc (select-keys bike deraileur)
+                    :type :deraileur)))
 
 ;;; calculations...
 
@@ -256,7 +282,13 @@
    of gears within 2% of the original ratio. "
   [{:keys [ratio ring sprocket wheel-dia crank-len]}]
   (->> (close-gear-pairs ratio)
-       (map #(bike (first %) (second %) wheel-dia crank-len false))
+       (map #(bike {:ring (first %)
+                    :sprocket (second %)
+                    :ratio ratio
+                    :wheel-diameter wheel-dia
+                    :crank-length crank-len
+                    :type :fixie
+                    :get-close-gears false}))
        (into [])))
 
 ;; Calculate skid patches.
@@ -381,13 +413,13 @@
   [{:keys [get-close-gears] :as bike}]
   "Fill in a fixie bike.
   You'll get back a map chock full of goodies."
-  (let [bike (coerce-bike bike)
+  (let [bike (bike->fixie bike)
         skp (skid-patches bike)
         gears (single-gear bike)
         bike (assoc bike
                     :gears gears
                     :skid-patches skp)]
-    (if get-close-gears
+    (if (not= get-close-gears nil)
       (assoc bike :close-gears
              (close-gears bike))
       bike)))
@@ -395,7 +427,7 @@
 (defmethod bike :internal [bike]
   "Pass in an internal gear bike map.
   Get back all the goodies for an internally geared bike."
-  (let [bike (coerce-bike bike)
+  (let [bike (bike->internal bike)
         bike (assoc bike :gear
                     (single-gear bike))]
     (assoc bike :gears (calc-gears bike))))
@@ -403,9 +435,20 @@
 (defmethod bike :deraileur [bike]
   "Pass in a deraileur gear bike map.
   get back all the goodies "
-  (let [bike (coerce-bike bike)]
+  (let [bike (bike->deraileur bike)]
     (assoc bike :gears (calc-gears bike))))
 
 (defmethod bike :any [bike]
   "An untyped any-bike, make it a fixie."
-  (bike (assoc bike :type :fixie)))
+  (assoc bike :type :fixie))
+
+(defmethod bike :close-gear
+  [{:keys [get-close-gears] :as bike}]
+  "Fill in a fixie bike.
+  You'll get back a map chock full of goodies."
+  (let [;;bike (bike->fixie bike)
+        skp (skid-patches bike)
+        gears (single-gear bike)]
+    (assoc bike
+           :gears gears
+           :skid-patches skp)))

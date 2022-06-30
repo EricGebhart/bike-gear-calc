@@ -1,4 +1,4 @@
-(ns bike-gear-calc.core-test
+(ns bike-gear-calc.core-tes
   (:require [bike-gear-calc.core :as gc]
             [clojure.spec.alpha :as s]
             [bike-gear-calc.data :as d]
@@ -23,7 +23,7 @@
                           :ring 52}))
 (def bike3f (gc/any-bike {:wheel-diameter wheel-dia
                           :ring 39
-                          :sprocketmeter 22}))
+                          :sprocket 22}))
 
 (def bike1d (gc/any-bike {:wheel-diameter wheel-dia
                           :sprockets [16 18 20 22]}))
@@ -45,12 +45,12 @@
   (is (= (s/valid? ::gc/any-bike bike1) true))
   (is (= (s/valid? ::gc/any-bike bike2) true))
   (is (= (s/valid? ::gc/any-bike bike3) true))
-  (is (= (s/valid? ::gc/any-bike (gc/coerce-bike :fixie bike1f)) true))
-  (is (= (s/valid? ::gc/any-bike (gc/coerce-bike :fixie bike2f)) true))
-  (is (= (s/valid? ::gc/any-bike (gc/coerce-bike :fixie bike3f)) true))
-  (is (= (s/valid? ::gc/any-bike (gc/coerce-bike :deraileur bike1d)) true))
-  (is (= (s/valid? ::gc/any-bike (gc/coerce-bike :internal bike1i)) true))
-  (is (= (s/valid? ::gc/any-bike (gc/coerce-bike :internal bike2i)) true)))
+  (is (= (s/valid? ::gc/any-bike (gc/bike->fixie bike1f)) true))
+  (is (= (s/valid? ::gc/any-bike (gc/bike->fixie bike2f)) true))
+  (is (= (s/valid? ::gc/any-bike (gc/bike->fixie bike3f)) true))
+  (is (= (s/valid? ::gc/any-bike (gc/bike->deraileur bike1d)) true))
+  (is (= (s/valid? ::gc/any-bike (gc/bike->internal bike1i)) true))
+  (is (= (s/valid? ::gc/any-bike (gc/bike->internal bike2i)) true)))
 
 (deftest gear-inches-test
   (is (= (gc/gear-inches bike1) 63.00))
@@ -226,7 +226,7 @@
             :sprocket 22}]} )))
 
 (deftest calc-gears-deraileur-test
-  (is (= (first (gc/calc-gears (gc/coerce-bike :deraileur bike1d)))
+  (is (= (first (gc/calc-gears (gc/bike->deraileur bike1d)))
          {:ring 52,
           :gears
           [{:gear-inches 87.75,
@@ -304,7 +304,7 @@
             :gain-ratio 2.35}))))
 
 (deftest hub-gear-map-test
-  (let [bike2a (assoc (gc/coerce-bike :internal bike2i) :gear
+  (let [bike2a (assoc (gc/bike->internal bike2i) :gear
                       (gc/single-gear bike2i))]
     (is (= (gc/calc-gears bike2a)
            [{:ratio 0.25,
@@ -331,33 +331,33 @@
 (def bike-wo-close-gears (gc/any-bike {:get-close-gears false}))
 
 (deftest create-gear-combinations-test
-  (is (= (take 5 (f/create-gear-combinations))
+  (is (= (take 5 (gc/create-gear-combinations))
          '([28 9] [28 10] [28 11] [28 12] [28 13])))
-  (is (= (count (f/create-gear-combinations)) 528)))
+  (is (= (count (gc/create-gear-combinations)) 528)))
 
 (deftest close-gear-pairs-test
-  (let [ratio (:ratio (f/bike bike1))]
-    (is (= (count (f/close-gear-pairs ratio )) 21))
-    (is (= (take 4 (f/close-gear-pairs ratio))
+  (let [ratio (:ratio (gc/bike bike1))]
+    (is (= (count (gc/close-gear-pairs ratio )) 21))
+    (is (= (take 4 (gc/close-gear-pairs ratio))
            '([28 12] [30 13] [33 14] [35 15])))))
 
 
 (deftest gcd-test
-  (is (= (f/gcd 18 6) 6))
-  (is (= (f/gcd 42 18) 6))
-  (is (= (f/gcd 32 18) 2)))
+  (is (= (gc/gcd 18 6) 6))
+  (is (= (gc/gcd 42 18) 6))
+  (is (= (gc/gcd 32 18) 2)))
 
 (deftest skid-patches-test
-  (is (= (first (f/skid-patches 42 18)) 3))
-  (is (= (first (f/skid-patches 32 18)) 9))
-  (is (= (second (f/skid-patches 42 18)) 6))
-  (is (= (second (f/skid-patches 32 18)) 9))
-  (is (= (f/skid-patches 42 18) [3 6]))
-  (is (= (f/skid-patches 32 18) [9 9])))
+  (is (= (first (gc/skid-patches 42 18)) 3))
+  (is (= (first (gc/skid-patches 32 18)) 9))
+  (is (= (second (gc/skid-patches 42 18)) 6))
+  (is (= (second (gc/skid-patches 32 18)) 9))
+  (is (= (gc/skid-patches 42 18) [3 6]))
+  (is (= (gc/skid-patches 32 18) [9 9])))
 
 
 (deftest close-gears-test
-  (is (= (f/close-gears bike1)
+  (is (= (gc/close-gears bike1)
          [{:sprocket 12,
            :gear-inches 63.0,
            :meters-dev 5.0271764,
@@ -485,7 +485,7 @@
            :ring 57,
            :skid-patches [8 16]}])
       )
-  (is (= (f/close-gears bike3)
+  (is (= (gc/close-gears bike3)
          [{:sprocket 16,
            :gear-inches 47.25,
            :meters-dev 3.7703824,
@@ -561,7 +561,7 @@
 
 
 (deftest bike-test-wo-close-gears
-  (is (= (gc/bike (gc/coerce-bike :fixie bike1))
+  (is (= (gc/bike bike1)
          {:ring 42,
           :sprocket 18,
           :wheel-dia 685.8,
